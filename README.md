@@ -5,7 +5,13 @@ Entity filter executor
 
 ### How to use
 ```typescript
-import { EntityLogic, Entity, EntitySchema, Filter, FilterCondition } from '@allbin/entity-logic'
+import {
+  EntityLogic,
+  Entity,
+  EntitySchema,
+  Filter,
+  FilterCondition
+} from '@allbin/entity-logic'
 
 const schema: EntitySchema = {
   /* ... */
