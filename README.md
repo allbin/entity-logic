@@ -19,8 +19,6 @@ const schema: EntitySchema = {
 
 const entities: Entity = [ /* ... */ ];
 
-const logic = EntityLogic(schema);
-
 const hasValue: FilterCondition = {
   field: 'user.1',
   propType: 'string',
@@ -38,6 +36,8 @@ const filter: Filter = [
   hasValue,
   matchesWildcardString,
 ];
+
+const logic = EntityLogic(schema);  // need one of these per schema
 
 const result = logic.execute(entities, filter);
 
