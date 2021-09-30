@@ -60,6 +60,9 @@ const executeFilter = (
 };
 
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
+  if (!schema.properties) {
+    throw new Error('Invalid schema passed to EntityLogic');
+  }
   const propsByKey = schema.properties.reduce<EntitySchemaPropsByKey>(
     (propsByKey, prop) => {
       propsByKey[prop.key] = prop;
