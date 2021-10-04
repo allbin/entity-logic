@@ -1,15 +1,6 @@
-import {
-  Entity,
-  EntitySchema,
-  EntitySchemaPropsByKey,
-  EntitySchemaPropType,
-} from './types/schema';
-import {
-  Filter,
-  FilterCondition,
-  FilterOperator,
-  FilterValue,
-} from './types/filter';
+import { Entity, EntitySchema, EntitySchemaPropsByKey } from './types/schema';
+
+import { Filter, FilterCondition } from './types/filter';
 
 import operators from './operators';
 
@@ -77,13 +68,7 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
   };
 };
 
-export {
-  Entity,
-  EntitySchema,
-  EntityLogic,
-  EntitySchemaPropType,
-  Filter,
-  FilterCondition,
-  FilterOperator,
-  FilterValue,
-};
+export * from './types/filter';
+export * from './types/schema';
+
+export { EntityLogic };

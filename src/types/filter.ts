@@ -59,7 +59,7 @@ interface FilterConditionStringManyArgs extends FilterConditionBase {
   value: string[];
 }
 
-type FilterConditionString =
+export type FilterConditionString =
   | FilterConditionStringNoArgs
   | FilterConditionStringSingleArg
   | FilterConditionStringManyArgs;
@@ -81,7 +81,7 @@ interface FilterConditionEnumManyArgs extends FilterConditionBase {
   value: string[];
 }
 
-type FilterConditionEnum =
+export type FilterConditionEnum =
   | FilterConditionEnumNoArgs
   | FilterConditionEnumSingleArg
   | FilterConditionEnumManyArgs;
@@ -103,7 +103,7 @@ interface FilterConditionNumberManyArgs extends FilterConditionBase {
   value: number[];
 }
 
-type FilterConditionNumber =
+export type FilterConditionNumber =
   | FilterConditionNumberNoArgs
   | FilterConditionNumberSingleArg
   | FilterConditionNumberManyArgs;
@@ -113,7 +113,7 @@ interface FilterConditionBooleanNoArg extends FilterConditionBase {
   operator: 'known' | 'unknown' | 'true' | 'false';
 }
 
-type FilterConditionBoolean = FilterConditionBooleanNoArg;
+export type FilterConditionBoolean = FilterConditionBooleanNoArg;
 
 interface FilterConditionDateTimeNoArgs extends FilterConditionBase {
   propType: 'date';
@@ -132,7 +132,7 @@ interface FilterConditionDateTimeManyArgs extends FilterConditionBase {
   value: DateTime[];
 }
 
-type FilterConditionDateTime =
+export type FilterConditionDateTime =
   | FilterConditionDateTimeNoArgs
   | FilterConditionDateTimeSingleArg
   | FilterConditionDateTimeManyArgs;
@@ -142,7 +142,7 @@ interface FilterConditionPhotoNoArg extends FilterConditionBase {
   operator: 'known' | 'unknown';
 }
 
-type FilterConditionPhoto = FilterConditionPhotoNoArg;
+export type FilterConditionPhoto = FilterConditionPhotoNoArg;
 
 interface FilterConditionStringArrayNoArgs extends FilterConditionBase {
   propType: 'array:string';
@@ -155,7 +155,7 @@ interface FilterConditionStringArrayManyArgs extends FilterConditionBase {
   value: string[];
 }
 
-type FilterConditionStringArray =
+export type FilterConditionStringArray =
   | FilterConditionStringArrayNoArgs
   | FilterConditionStringArrayManyArgs;
 
@@ -170,7 +170,7 @@ interface FilterConditionNumberArrayManyArgs extends FilterConditionBase {
   value: number[];
 }
 
-type FilterConditionNumberArray =
+export type FilterConditionNumberArray =
   | FilterConditionNumberArrayNoArgs
   | FilterConditionNumberArrayManyArgs;
 
