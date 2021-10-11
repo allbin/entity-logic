@@ -20,13 +20,13 @@ const executeCondition = (
     );
   }
 
-  if (condition.propType !== prop.type) {
+  if (condition.type !== prop.type) {
     throw new Error(
       `Filter condition has invalid prop type for schema property: ${condition.field}`,
     );
   }
 
-  const op = operators[condition.propType]?.[condition.operator];
+  const op = operators[condition.type]?.[condition.operator];
   if (!op) {
     throw new Error(
       `Invalid operator (${condition.operator}) for type: ${prop.type}`,

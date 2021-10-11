@@ -172,7 +172,7 @@ describe('boolean operators', () => {
   it('correctly executes boolean.known conditions', () => {
     const condition: FilterCondition = {
       field: 'boolean.1',
-      propType: 'boolean',
+      type: 'boolean',
       operator: 'known',
     };
 
@@ -183,7 +183,7 @@ describe('boolean operators', () => {
   it('correctly executes boolean.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'boolean.1',
-      propType: 'boolean',
+      type: 'boolean',
       operator: 'unknown',
     };
 
@@ -208,7 +208,7 @@ describe('boolean operators', () => {
   it('correctly executes boolean.true conditions', () => {
     const condition: FilterCondition = {
       field: 'boolean.1',
-      propType: 'boolean',
+      type: 'boolean',
       operator: 'true',
     };
 
@@ -219,7 +219,7 @@ describe('boolean operators', () => {
   it('correctly executes boolean.false conditions', () => {
     const condition: FilterCondition = {
       field: 'boolean.1',
-      propType: 'boolean',
+      type: 'boolean',
       operator: 'false',
     };
 
@@ -232,7 +232,7 @@ describe('number operators', () => {
   it('correctly executes number.known conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'known',
     };
 
@@ -243,7 +243,7 @@ describe('number operators', () => {
   it('correctly executes number.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'unknown',
     };
 
@@ -268,7 +268,7 @@ describe('number operators', () => {
   it('correctly executes number.eq conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'eq',
       value: 0,
     };
@@ -280,7 +280,7 @@ describe('number operators', () => {
   it('correctly executes number.neq conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'neq',
       value: 0,
     };
@@ -292,7 +292,7 @@ describe('number operators', () => {
   it('correctly executes number.gt conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'gt',
       value: 0,
     };
@@ -304,7 +304,7 @@ describe('number operators', () => {
   it('correctly executes number.gte conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'gte',
       value: 0,
     };
@@ -316,7 +316,7 @@ describe('number operators', () => {
   it('correctly executes number.lt conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'lt',
       value: 1,
     };
@@ -328,7 +328,7 @@ describe('number operators', () => {
   it('correctly executes number.lte conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'lte',
       value: 1,
     };
@@ -340,7 +340,7 @@ describe('number operators', () => {
   it('correctly executes number.between conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'between',
       value: [0, 0],
     };
@@ -352,7 +352,7 @@ describe('number operators', () => {
   it('correctly executes number.not_between conditions', () => {
     const condition: FilterCondition = {
       field: 'number.1',
-      propType: 'number',
+      type: 'number',
       operator: 'not_between',
       value: [0, 0],
     };
@@ -366,7 +366,7 @@ describe('string operators', () => {
   it('correctly executes string.known conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'known',
     };
 
@@ -380,7 +380,7 @@ describe('string operators', () => {
   it('correctly executes string.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'unknown',
     };
 
@@ -405,7 +405,7 @@ describe('string operators', () => {
   it('correctly executes string.eq conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'eq',
       value: 'string',
     };
@@ -417,7 +417,7 @@ describe('string operators', () => {
   it('correctly executes string.neq conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'neq',
       value: 'string',
     };
@@ -429,7 +429,7 @@ describe('string operators', () => {
   it('correctly executes string.matches conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'matches',
       value: 'r*ng',
     };
@@ -441,7 +441,7 @@ describe('string operators', () => {
   it('correctly executes string.not_matches conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'not_matches',
       value: 'r*ng',
     };
@@ -453,7 +453,7 @@ describe('string operators', () => {
   it('correctly executes string.one_of conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'one_of',
       value: ['string', ''],
     };
@@ -468,7 +468,7 @@ describe('string operators', () => {
   it('correctly executes string.none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
-      propType: 'string',
+      type: 'string',
       operator: 'none_of',
       value: ['string'],
     };
@@ -482,7 +482,7 @@ describe('enum operators', () => {
   it('correctly executes enum.known conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'known',
     };
 
@@ -493,7 +493,7 @@ describe('enum operators', () => {
   it('correctly executes enum.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'unknown',
     };
 
@@ -519,7 +519,7 @@ describe('enum operators', () => {
   it('correctly executes enum.eq conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'eq',
       value: 'alternative1',
     };
@@ -531,7 +531,7 @@ describe('enum operators', () => {
   it('correctly executes enum.neq conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'neq',
       value: 'alternative2',
     };
@@ -543,7 +543,7 @@ describe('enum operators', () => {
   it('correctly executes enum.matches conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'matches',
       value: 'lter*ive',
     };
@@ -555,7 +555,7 @@ describe('enum operators', () => {
   it('correctly executes enum.not_matches conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'not_matches',
       value: 'r*ng',
     };
@@ -567,7 +567,7 @@ describe('enum operators', () => {
   it('correctly executes enum.one_of conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'one_of',
       value: ['alternative1'],
     };
@@ -579,7 +579,7 @@ describe('enum operators', () => {
   it('correctly executes enum.none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
-      propType: 'enum',
+      type: 'enum',
       operator: 'none_of',
       value: ['alternative2'],
     };
@@ -593,7 +593,7 @@ describe('date operators', () => {
   it('correctly executes date.known conditions', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'known',
     };
 
@@ -604,7 +604,7 @@ describe('date operators', () => {
   it('correctly executes date.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'unknown',
     };
 
@@ -629,7 +629,7 @@ describe('date operators', () => {
   it('correctly executes date.before conditions', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'before',
       value: DateTime.utc().minus({ minutes: 10 }),
     };
@@ -641,7 +641,7 @@ describe('date operators', () => {
   it('correctly executes date.after conditions', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'after',
       value: DateTime.utc().minus({ minutes: 10 }),
     };
@@ -653,7 +653,7 @@ describe('date operators', () => {
   it('correctly executes date.between', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'between',
       value: [DateTime.utc().minus({ minutes: 10 }), DateTime.utc()],
     };
@@ -665,7 +665,7 @@ describe('date operators', () => {
   it('correctly executes date.not_between', () => {
     const condition: FilterCondition = {
       field: 'date.1',
-      propType: 'date',
+      type: 'date',
       operator: 'not_between',
       value: [DateTime.utc().minus({ minutes: 10 }), DateTime.utc()],
     };
@@ -679,7 +679,7 @@ describe('photo operators', () => {
   it('correctly executes photo.known operators', () => {
     const condition: FilterCondition = {
       field: 'photo.1',
-      propType: 'photo',
+      type: 'photo',
       operator: 'known',
     };
 
@@ -690,7 +690,7 @@ describe('photo operators', () => {
   it('correctly executes photo.unknown operators', () => {
     const condition: FilterCondition = {
       field: 'photo.1',
-      propType: 'photo',
+      type: 'photo',
       operator: 'unknown',
     };
 
@@ -718,7 +718,7 @@ describe('array:number operators', () => {
   it('correctly executes array:number.known conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
-      propType: 'array:number',
+      type: 'array:number',
       operator: 'known',
     };
 
@@ -732,7 +732,7 @@ describe('array:number operators', () => {
   it('correctly executes array:number.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
-      propType: 'array:number',
+      type: 'array:number',
       operator: 'unknown',
     };
 
@@ -757,7 +757,7 @@ describe('array:number operators', () => {
   it('correctly executes array:number.includes_none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
-      propType: 'array:number',
+      type: 'array:number',
       operator: 'includes_none_of',
       value: [3, 7],
     };
@@ -769,7 +769,7 @@ describe('array:number operators', () => {
   it('correctly executes array:number.includes_any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
-      propType: 'array:number',
+      type: 'array:number',
       operator: 'includes_any_of',
       value: [2, 10],
     };
@@ -781,7 +781,7 @@ describe('array:number operators', () => {
   it('correctly executes array:number.includes_all_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
-      propType: 'array:number',
+      type: 'array:number',
       operator: 'includes_all_of',
       value: [3, 5],
     };
@@ -795,7 +795,7 @@ describe('array:string operators', () => {
   it('correctly executes array:string.known conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
-      propType: 'array:string',
+      type: 'array:string',
       operator: 'known',
     };
 
@@ -809,7 +809,7 @@ describe('array:string operators', () => {
   it('correctly executes array:string.unknown conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
-      propType: 'array:string',
+      type: 'array:string',
       operator: 'unknown',
     };
 
@@ -834,7 +834,7 @@ describe('array:string operators', () => {
   it('correctly executes array:string.includes_none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
-      propType: 'array:string',
+      type: 'array:string',
       operator: 'includes_none_of',
       value: ['string1'],
     };
@@ -846,7 +846,7 @@ describe('array:string operators', () => {
   it('correctly executes array:string.includes_any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
-      propType: 'array:string',
+      type: 'array:string',
       operator: 'includes_any_of',
       value: ['string1'],
     };
@@ -858,7 +858,7 @@ describe('array:string operators', () => {
   it('correctly executes array:string.includes_all_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
-      propType: 'array:string',
+      type: 'array:string',
       operator: 'includes_all_of',
       value: ['string5', 'string6'],
     };
