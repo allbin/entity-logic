@@ -3,10 +3,11 @@ import { DateTime } from 'luxon';
 import { Entity, EntitySchemaPropType } from './types/schema';
 
 type EntityFilterFunction = (entity: Entity, prop_val: any) => boolean;
+type OperatorFunction = (field: string, ...args: any[]) => EntityFilterFunction;
 
-interface Operator {
+export interface Operator {
   params: EntitySchemaPropType[];
-  func: (field: string, ...args: any[]) => EntityFilterFunction;
+  func: OperatorFunction;
 }
 
 type OperatorFunctions = Record<EntitySchemaPropType, Record<string, Operator>>;
@@ -160,7 +161,7 @@ const operators: OperatorFunctions = {
         typeof val === 'string' &&
         !escapeAndCompileRegex(val).test(prop_val),
     },
-    one_of: {
+    any_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_val) =>
         Array.isArray(vals) &&
@@ -220,7 +221,7 @@ const operators: OperatorFunctions = {
         typeof val === 'string' &&
         !escapeAndCompileRegex(val).test(prop_val),
     },
-    one_of: {
+    any_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_val) =>
         Array.isArray(vals) &&
@@ -317,21 +318,21 @@ const operators: OperatorFunctions = {
         entity.properties[field] === undefined ||
         entity.properties[field] === null,
     },
-    includes_none_of: {
+    none_of: {
       params: ['array:number'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
         vals.find((v) => prop_vals.includes(v)) === undefined,
     },
-    includes_any_of: {
+    any_of: {
       params: ['array:number'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
         vals.some((v) => prop_vals.includes(v)),
     },
-    includes_all_of: {
+    all_of: {
       params: ['array:number'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
@@ -354,21 +355,21 @@ const operators: OperatorFunctions = {
         entity.properties[field] === undefined ||
         entity.properties[field] === null,
     },
-    includes_none_of: {
+    none_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
         vals.find((v) => prop_vals.includes(v)) === undefined,
     },
-    includes_any_of: {
+    any_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
         vals.some((v) => prop_vals.includes(v)),
     },
-    includes_all_of: {
+    all_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&

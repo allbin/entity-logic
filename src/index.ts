@@ -2,10 +2,12 @@ import { Entity, EntitySchema, EntitySchemaPropsByKey } from './types/schema';
 
 import { Filter, FilterCondition } from './types/filter';
 
-import operators from './operators';
+import operators, { Operator } from './operators';
 
 interface EntityLogic {
   execute: (entities: Entity[], filter: Filter) => Entity[];
+  validate: (filter: Filter) => Operator[];
+  validateCondition: (condtion: FilterCondition) => Operator;
 }
 
 const executeCondition = (
@@ -13,25 +15,7 @@ const executeCondition = (
   entities: Entity[],
   condition: FilterCondition,
 ): Entity[] => {
-  const prop = schemaPropsByKey[condition.field];
-  if (!prop) {
-    throw new Error(
-      `Filter condition references non-existent schema property: ${condition.field}`,
-    );
-  }
-
-  if (condition.type !== prop.type) {
-    throw new Error(
-      `Filter condition has invalid prop type for schema property: ${condition.field}`,
-    );
-  }
-
-  const op = operators[condition.type]?.[condition.operator];
-  if (!op) {
-    throw new Error(
-      `Invalid operator (${condition.operator}) for type: ${prop.type}`,
-    );
-  }
+  const op = validateFilterCondition(schemaPropsByKey, condition);
 
   return entities.filter((e) =>
     op.func(condition.field, condition.value)(e, e.properties[condition.field]),
@@ -50,6 +34,40 @@ const executeFilter = (
   );
 };
 
+const validateFilterCondition = (
+  schemaPropsByKey: EntitySchemaPropsByKey,
+  condition: FilterCondition,
+): Operator => {
+  const prop = schemaPropsByKey[condition.field];
+  if (!prop) {
+    throw new Error(
+      `Filter condition references non-existent schema property: ${condition.field}`,
+    );
+  }
+
+  if (prop.type !== condition.type) {
+    throw new Error(
+      `Filter condition has invalid prop type for schema property: ${condition.field}`,
+    );
+  }
+
+  const op = operators[condition.type]?.[condition.operator];
+  if (!op) {
+    throw new Error(
+      `Invalid operator (${condition.operator}) for type: ${prop.type}`,
+    );
+  }
+
+  return op;
+};
+
+const validateFilter = (
+  schemaPropsByKey: EntitySchemaPropsByKey,
+  filter: Filter,
+): Operator[] => {
+  return filter.map((f) => validateFilterCondition(schemaPropsByKey, f));
+};
+
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
   if (!schema.properties) {
     throw new Error('Invalid schema passed to EntityLogic');
@@ -65,6 +83,10 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
   return {
     execute: (entities: Entity[], filter: Filter): Entity[] =>
       executeFilter(propsByKey, entities, filter),
+    validate: (filter: Filter): Operator[] =>
+      validateFilter(propsByKey, filter),
+    validateCondition: (condition: FilterCondition): Operator =>
+      validateFilterCondition(propsByKey, condition),
   };
 };
 

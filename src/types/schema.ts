@@ -47,7 +47,7 @@ export type EntitySchemaPropValue =
   | number[]
   | string[];
 
-type EntitySchemaProp = {
+export type EntitySchemaProp = {
   /**
    * Property key
    */

@@ -450,11 +450,11 @@ describe('string operators', () => {
     expect(result).toMatchObject([stringWithNoLengthEntity]);
   });
 
-  it('correctly executes string.one_of conditions', () => {
+  it('correctly executes string.any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'string.1',
       type: 'string',
-      operator: 'one_of',
+      operator: 'any_of',
       value: ['string', ''],
     };
 
@@ -564,11 +564,11 @@ describe('enum operators', () => {
     expect(result).toMatchObject([enumEntity]);
   });
 
-  it('correctly executes enum.one_of conditions', () => {
+  it('correctly executes enum.any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'enum.1',
       type: 'enum',
-      operator: 'one_of',
+      operator: 'any_of',
       value: ['alternative1'],
     };
 
@@ -754,11 +754,11 @@ describe('array:number operators', () => {
     ]);
   });
 
-  it('correctly executes array:number.includes_none_of conditions', () => {
+  it('correctly executes array:number.none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
       type: 'array:number',
-      operator: 'includes_none_of',
+      operator: 'none_of',
       value: [3, 7],
     };
 
@@ -766,11 +766,11 @@ describe('array:number operators', () => {
     expect(result).toMatchObject([arrayEvenNumbersEntity]);
   });
 
-  it('correctly executes array:number.includes_any_of conditions', () => {
+  it('correctly executes array:number.any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
       type: 'array:number',
-      operator: 'includes_any_of',
+      operator: 'any_of',
       value: [2, 10],
     };
 
@@ -778,11 +778,11 @@ describe('array:number operators', () => {
     expect(result).toMatchObject([arrayEvenNumbersEntity]);
   });
 
-  it('correctly executes array:number.includes_all_of conditions', () => {
+  it('correctly executes array:number.all_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-number.1',
       type: 'array:number',
-      operator: 'includes_all_of',
+      operator: 'all_of',
       value: [3, 5],
     };
 
@@ -831,11 +831,11 @@ describe('array:string operators', () => {
     ]);
   });
 
-  it('correctly executes array:string.includes_none_of conditions', () => {
+  it('correctly executes array:string.none_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
       type: 'array:string',
-      operator: 'includes_none_of',
+      operator: 'none_of',
       value: ['string1'],
     };
 
@@ -843,11 +843,11 @@ describe('array:string operators', () => {
     expect(result).toMatchObject([arrayStringEntitySecond]);
   });
 
-  it('correctly executes array:string.includes_any_of conditions', () => {
+  it('correctly executes array:string.any_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
       type: 'array:string',
-      operator: 'includes_any_of',
+      operator: 'any_of',
       value: ['string1'],
     };
 
@@ -855,15 +855,70 @@ describe('array:string operators', () => {
     expect(result).toMatchObject([arrayStringEntityFirst]);
   });
 
-  it('correctly executes array:string.includes_all_of conditions', () => {
+  it('correctly executes array:string.all_of conditions', () => {
     const condition: FilterCondition = {
       field: 'array-string.1',
       type: 'array:string',
-      operator: 'includes_all_of',
+      operator: 'all_of',
       value: ['string5', 'string6'],
     };
 
     const result = entityLogic.execute(entities, [condition]);
     expect(result).toMatchObject([arrayStringEntitySecond]);
+  });
+});
+
+describe('validation', () => {
+  it('correctly validates a valid filter condition', () => {
+    const schema: EntitySchema = {
+      properties: [
+        {
+          key: 'user.1',
+          type: 'enum',
+          name: 'Väderskydd',
+          alternatives: ['CC 10', 'DNX2'],
+        },
+      ],
+      groups: [],
+      translations: {},
+    };
+
+    const logic = EntityLogic(schema);
+
+    const condition: FilterCondition = {
+      field: 'user.1',
+      type: 'enum',
+      operator: 'any_of',
+      value: ['CC 10'],
+    };
+
+    const result = logic.validate([condition]);
+    expect(result).toBeTruthy();
+  });
+
+  it('correctly validates an invalid filter condition', () => {
+    const schema: EntitySchema = {
+      properties: [
+        {
+          key: 'user.1',
+          type: 'enum',
+          name: 'Väderskydd',
+          alternatives: ['CC 10', 'DNX2'],
+        },
+      ],
+      groups: [],
+      translations: {},
+    };
+
+    const logic = EntityLogic(schema);
+
+    const condition: FilterCondition = {
+      field: 'user.1',
+      type: 'string',
+      operator: 'any_of',
+      value: ['CC 10'],
+    };
+
+    expect(() => logic.validate([condition])).toThrow();
   });
 });

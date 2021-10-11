@@ -9,8 +9,9 @@ export type FilterOperator =
   | 'false'
   | 'eq'
   | 'neq'
-  | 'one_of'
   | 'none_of'
+  | 'any_of'
+  | 'all_of'
   | 'matches'
   | 'not_matches'
   | 'gt'
@@ -20,10 +21,7 @@ export type FilterOperator =
   | 'between'
   | 'not_between'
   | 'before'
-  | 'after'
-  | 'includes_all_of'
-  | 'includes_any_of'
-  | 'includes_none_of';
+  | 'after';
 
 export type FilterValue =
   | undefined
@@ -55,7 +53,7 @@ interface FilterConditionStringSingleArg extends FilterConditionBase {
 
 interface FilterConditionStringManyArgs extends FilterConditionBase {
   type: 'string';
-  operator: 'one_of' | 'none_of';
+  operator: 'none_of' | 'any_of';
   value: string[];
 }
 
@@ -77,7 +75,7 @@ interface FilterConditionEnumSingleArg extends FilterConditionBase {
 
 interface FilterConditionEnumManyArgs extends FilterConditionBase {
   type: 'enum';
-  operator: 'one_of' | 'none_of';
+  operator: 'none_of' | 'any_of';
   value: string[];
 }
 
@@ -151,7 +149,7 @@ interface FilterConditionStringArrayNoArgs extends FilterConditionBase {
 
 interface FilterConditionStringArrayManyArgs extends FilterConditionBase {
   type: 'array:string';
-  operator: 'includes_none_of' | 'includes_any_of' | 'includes_all_of';
+  operator: 'none_of' | 'any_of' | 'all_of';
   value: string[];
 }
 
@@ -166,7 +164,7 @@ interface FilterConditionNumberArrayNoArgs extends FilterConditionBase {
 
 interface FilterConditionNumberArrayManyArgs extends FilterConditionBase {
   type: 'array:number';
-  operator: 'includes_none_of' | 'includes_any_of' | 'includes_all_of';
+  operator: 'none_of' | 'any_of' | 'all_of';
   value: number[];
 }
 
