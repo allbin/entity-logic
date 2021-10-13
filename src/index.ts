@@ -6,8 +6,9 @@ import operators, { Operator } from './operators';
 
 interface EntityLogic {
   execute: (entities: Entity[], filter: Filter) => Entity[];
-  validate: (filter: Filter) => Operator[];
   validateCondition: (condtion: FilterCondition) => Operator;
+  validateFilter: (filter: Filter) => Operator[];
+  validateProperties: (properties: Record<string, unknown>) => void;
 }
 
 const executeCondition = (
@@ -58,6 +59,8 @@ const validateFilterCondition = (
     );
   }
 
+  // FIXME: validate filter values
+
   return op;
 };
 
@@ -66,6 +69,98 @@ const validateFilter = (
   filter: Filter,
 ): Operator[] => {
   return filter.map((f) => validateFilterCondition(schemaPropsByKey, f));
+};
+
+const validateProperties = (
+  schemaPropsByKey: EntitySchemaPropsByKey,
+  properties: Record<string, unknown>,
+): void => {
+  Object.keys(properties).forEach((p) => {
+    const prop_value = properties[p];
+    const schema_prop = schemaPropsByKey[p];
+
+    if (!schema_prop) {
+      throw new Error(`Unknown property '${p}'`);
+    }
+    switch (schema_prop.type) {
+      case 'boolean': {
+        if (typeof prop_value !== 'boolean') {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a boolean`,
+          );
+        }
+        break;
+      }
+      case 'number': {
+        if (typeof prop_value !== 'number') {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a number`,
+          );
+        }
+        break;
+      }
+      case 'string': {
+        if (typeof prop_value !== 'string') {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a string`,
+          );
+        }
+        break;
+      }
+      case 'enum': {
+        if (typeof prop_value !== 'string') {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a string`,
+          );
+        }
+        break;
+      }
+      case 'date': {
+        if (
+          (typeof prop_value !== 'string' ||
+            !/^[0-9]{4}-[0-9]{2}-[0-9]{2}[ T][0-9]{2}:[0-9]{2}:[0-9]{2}/.test(
+              prop_value,
+            )) &&
+          !(prop_value instanceof Date && !Number.isNaN(prop_value))
+        ) {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a date or iso-string`,
+          );
+        }
+        break;
+      }
+      case 'photo': {
+        if (typeof prop_value !== 'string') {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a string`,
+          );
+        }
+        break;
+      }
+      case 'array:number': {
+        if (
+          !Array.isArray(prop_value) ||
+          prop_value.some((v) => typeof v !== 'number')
+        ) {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be an array of numbers`,
+          );
+        }
+        break;
+      }
+      case 'array:string': {
+        if (
+          !Array.isArray(prop_value) ||
+          prop_value.some((v) => typeof v !== 'string')
+        ) {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be an array of strings`,
+          );
+        }
+        break;
+      }
+    }
+  });
 };
 
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
@@ -83,10 +178,12 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
   return {
     execute: (entities: Entity[], filter: Filter): Entity[] =>
       executeFilter(propsByKey, entities, filter),
-    validate: (filter: Filter): Operator[] =>
-      validateFilter(propsByKey, filter),
     validateCondition: (condition: FilterCondition): Operator =>
       validateFilterCondition(propsByKey, condition),
+    validateFilter: (filter: Filter): Operator[] =>
+      validateFilter(propsByKey, filter),
+    validateProperties: (properties: Record<string, unknown>) =>
+      validateProperties(propsByKey, properties),
   };
 };
 

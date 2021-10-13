@@ -26,6 +26,11 @@ const schema: EntitySchema = {
       name: 'Date',
     },
     {
+      key: 'date.2',
+      type: 'date',
+      name: 'DateString',
+    },
+    {
       key: 'enum.1',
       type: 'enum',
       name: 'Enum',
@@ -870,55 +875,107 @@ describe('array:string operators', () => {
 
 describe('validation', () => {
   it('correctly validates a valid filter condition', () => {
-    const schema: EntitySchema = {
-      properties: [
-        {
-          key: 'user.1',
-          type: 'enum',
-          name: 'Väderskydd',
-          alternatives: ['CC 10', 'DNX2'],
-        },
-      ],
-      groups: [],
-      translations: {},
-    };
-
     const logic = EntityLogic(schema);
 
     const condition: FilterCondition = {
-      field: 'user.1',
+      field: 'enum.1',
       type: 'enum',
       operator: 'any_of',
-      value: ['CC 10'],
+      value: ['alternative2'],
     };
 
-    const result = logic.validate([condition]);
+    const result = logic.validateFilter([condition]);
     expect(result).toBeTruthy();
   });
 
   it('correctly validates an invalid filter condition', () => {
-    const schema: EntitySchema = {
-      properties: [
-        {
-          key: 'user.1',
-          type: 'enum',
-          name: 'Väderskydd',
-          alternatives: ['CC 10', 'DNX2'],
-        },
-      ],
-      groups: [],
-      translations: {},
-    };
-
     const logic = EntityLogic(schema);
 
     const condition: FilterCondition = {
-      field: 'user.1',
+      field: 'enum.1',
       type: 'string',
       operator: 'any_of',
-      value: ['CC 10'],
+      value: ['alternative1'],
     };
 
-    expect(() => logic.validate([condition])).toThrow();
+    expect(() => logic.validateFilter([condition])).toThrow();
+  });
+
+  it('correctly validates a set of valid properties', () => {
+    const props = {
+      'enum.1': 'alternative2',
+      'boolean.1': true,
+      'number.1': 0,
+      'string.1': 'string',
+      'photo.1': 'https://example.com',
+      'array-number.1': [0, 1, 2],
+      'array-string.1': ['a', 'b', 'c'],
+      'date.1': new Date(),
+      'date.2': new Date().toISOString(),
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).not.toThrow();
+  });
+
+  it('correctly validates an invalid boolean property', () => {
+    const props = {
+      'boolean.1': 'string',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates an invalid number property', () => {
+    const props = {
+      'number.1': 'string',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates an invalid string property', () => {
+    const props = {
+      'string.1': 2,
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates an invalid date property', () => {
+    const props = {
+      'date.1': 'string',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates an invalid photo property', () => {
+    const props = {
+      'photo.1': 3,
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+  it('correctly validates an invalid array:number property', () => {
+    const props = {
+      'array-number.1': ['a'],
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+  it('correctly validates an invalid array:string property', () => {
+    const props = {
+      'array-string.1': [2],
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
   });
 });
