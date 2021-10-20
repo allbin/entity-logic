@@ -1,4 +1,10 @@
-import { Entity, EntityLogic, EntitySchema, FilterCondition } from './index';
+import {
+  Entity,
+  EntityLogic,
+  EntitySchema,
+  FilterCondition,
+  validateSchema,
+} from './index';
 
 import { DateTime } from 'luxon';
 
@@ -8,48 +14,48 @@ const schema: EntitySchema = {
     {
       key: 'inventory.1',
       type: 'boolean',
-      name: 'Boolean',
+      name: 'boolean',
     },
     {
       key: 'inventory.2',
       type: 'number',
-      name: 'Number',
+      name: 'number',
     },
     {
       key: 'inventory.3',
       type: 'string',
-      name: 'String',
+      name: 'string',
     },
     {
       key: 'inventory.4',
       type: 'date',
-      name: 'Date',
+      name: 'date',
     },
     {
       key: 'inventory.5',
       type: 'date',
-      name: 'DateString',
+      name: 'datestring',
     },
     {
       key: 'inventory.6',
       type: 'enum',
-      name: 'Enum',
+      name: 'enum',
       alternatives: ['alternative1', 'alternative2'],
     },
     {
       key: 'inventory.7',
       type: 'photo',
-      name: 'Photo',
+      name: 'photo',
     },
     {
       key: 'inventory.8',
       type: 'array:number',
-      name: 'ArrayNumber',
+      name: 'arraynumber',
     },
     {
       key: 'inventory.9',
       type: 'array:string',
-      name: 'ArrayString',
+      name: 'arraystring',
     },
   ],
 };
@@ -976,5 +982,23 @@ describe('validation', () => {
 
     const logic = EntityLogic(schema);
     expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates a valid schema', () => {
+    expect(() => validateSchema(schema)).not.toThrow();
+  });
+
+  it('correctly validates an invalid schema', () => {
+    const invalid_schema: EntitySchema = {
+      groups: [],
+      properties: [
+        {
+          key: 'user.1',
+          type: 'string',
+          name: 'Test',
+        },
+      ],
+    };
+    expect(() => validateSchema(invalid_schema)).toThrow();
   });
 });
