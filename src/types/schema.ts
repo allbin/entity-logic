@@ -9,7 +9,6 @@ export type EntitySchema = {
    * Array of EntitySchemaProps
    */
   properties: Array<EntitySchemaProp>;
-  translations: EntitySchemaTranslations;
 };
 
 export type EntitySchemaPropsByKey = Record<string, EntitySchemaProp>;
@@ -80,17 +79,6 @@ export type EntitySchemaProp = {
    * URL referencing image to be presented together with help_text
    */
   help_image?: string;
-};
-
-type EntitySchemaTranslations = {
-  /**
-   * Key-value dictionary of property IDs mapped to translations for the en-US locale
-   */
-  'en-US'?: Record<string, string>;
-  /**
-   * Key-value dictionary of property IDs mapped to translations for the sv-SE locale
-   */
-  'sv-SE'?: Record<string, string>;
 };
 
 export type Entity = {
