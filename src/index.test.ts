@@ -6,48 +6,48 @@ const schema: EntitySchema = {
   groups: [],
   properties: [
     {
-      key: 'boolean.1',
+      key: 'inventory.1',
       type: 'boolean',
       name: 'Boolean',
     },
     {
-      key: 'number.1',
+      key: 'inventory.2',
       type: 'number',
       name: 'Number',
     },
     {
-      key: 'string.1',
+      key: 'inventory.3',
       type: 'string',
       name: 'String',
     },
     {
-      key: 'date.1',
+      key: 'inventory.4',
       type: 'date',
       name: 'Date',
     },
     {
-      key: 'date.2',
+      key: 'inventory.5',
       type: 'date',
       name: 'DateString',
     },
     {
-      key: 'enum.1',
+      key: 'inventory.6',
       type: 'enum',
       name: 'Enum',
       alternatives: ['alternative1', 'alternative2'],
     },
     {
-      key: 'photo.1',
+      key: 'inventory.7',
       type: 'photo',
       name: 'Photo',
     },
     {
-      key: 'array-number.1',
+      key: 'inventory.8',
       type: 'array:number',
       name: 'ArrayNumber',
     },
     {
-      key: 'array-string.1',
+      key: 'inventory.9',
       type: 'array:string',
       name: 'ArrayString',
     },
@@ -62,93 +62,93 @@ const undefinedEntity = {
 const booleanTrueEntity = {
   properties: {
     'meta.id': 'boolean_id_true',
-    'boolean.1': true,
+    'inventory.1': true,
   },
 };
 const booleanFalseEntity = {
   properties: {
     'meta.id': 'boolean_id_false',
-    'boolean.1': false,
+    'inventory.1': false,
   },
 };
 
 const numberOneEntity = {
   properties: {
     'meta.id': 'number_id_1',
-    'number.1': 1,
+    'inventory.2': 1,
   },
 };
 const numberZeroEntity = {
   properties: {
     'meta.id': 'number_id_0',
-    'number.1': 0,
+    'inventory.2': 0,
   },
 };
 const stringWithLengthEntity = {
   properties: {
     'meta.id': 'string_id_len',
-    'string.1': 'string',
+    'inventory.3': 'string',
   },
 };
 
 const stringWithNoLengthEntity = {
   properties: {
     'meta.id': 'string_id_nolen',
-    'string.1': '',
+    'inventory.3': '',
   },
 };
 const dateEpochEntity = {
   properties: {
     'meta.id': 'date_epoch_utc',
-    'date.1': DateTime.utc(1970, 1, 1, 0, 0, 0, 0),
+    'inventory.4': DateTime.utc(1970, 1, 1, 0, 0, 0, 0),
   },
 };
 const date5MinAgoEntity = {
   properties: {
     'meta.id': 'date_5_min_ago',
-    'date.1': DateTime.utc().minus({ minutes: 5 }),
+    'inventory.4': DateTime.utc().minus({ minutes: 5 }),
   },
 };
 
 const enumEntity = {
   properties: {
     'meta.id': 'enum_id',
-    'enum.1': 'alternative1',
+    'inventory.6': 'alternative1',
   },
 };
 
 const photoEntity = {
   properties: {
     'meta.id': 'photo_id',
-    'photo.1': 'https://photo-url',
+    'inventory.7': 'https://photo-url',
   },
 };
 
 const arrayEvenNumbersEntity = {
   properties: {
     'meta.id': 'array_number_id',
-    'array-number.1': [0, 2, 4],
+    'inventory.8': [0, 2, 4],
   },
 };
 
 const arrayOddNumbersEntity = {
   properties: {
     'meta.id': 'array_number_id',
-    'array-number.1': [1, 3, 5],
+    'inventory.8': [1, 3, 5],
   },
 };
 
 const arrayStringEntityFirst = {
   properties: {
     'meta.id': 'array_string_id',
-    'array-string.1': ['string1', 'string2', 'string3'],
+    'inventory.9': ['string1', 'string2', 'string3'],
   },
 };
 
 const arrayStringEntitySecond = {
   properties: {
     'meta.id': 'array_string_id',
-    'array-string.1': ['string4', 'string5', 'string6'],
+    'inventory.9': ['string4', 'string5', 'string6'],
   },
 };
 
@@ -175,7 +175,7 @@ const entityLogic = EntityLogic(schema);
 describe('boolean operators', () => {
   it('correctly executes boolean.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'boolean.1',
+      field: 'inventory.1',
       type: 'boolean',
       operator: 'known',
     };
@@ -186,7 +186,7 @@ describe('boolean operators', () => {
 
   it('correctly executes boolean.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'boolean.1',
+      field: 'inventory.1',
       type: 'boolean',
       operator: 'unknown',
     };
@@ -211,7 +211,7 @@ describe('boolean operators', () => {
 
   it('correctly executes boolean.true conditions', () => {
     const condition: FilterCondition = {
-      field: 'boolean.1',
+      field: 'inventory.1',
       type: 'boolean',
       operator: 'true',
     };
@@ -222,7 +222,7 @@ describe('boolean operators', () => {
 
   it('correctly executes boolean.false conditions', () => {
     const condition: FilterCondition = {
-      field: 'boolean.1',
+      field: 'inventory.1',
       type: 'boolean',
       operator: 'false',
     };
@@ -235,7 +235,7 @@ describe('boolean operators', () => {
 describe('number operators', () => {
   it('correctly executes number.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'known',
     };
@@ -246,7 +246,7 @@ describe('number operators', () => {
 
   it('correctly executes number.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'unknown',
     };
@@ -271,7 +271,7 @@ describe('number operators', () => {
 
   it('correctly executes number.eq conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'eq',
       value: 0,
@@ -283,7 +283,7 @@ describe('number operators', () => {
 
   it('correctly executes number.neq conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'neq',
       value: 0,
@@ -295,7 +295,7 @@ describe('number operators', () => {
 
   it('correctly executes number.gt conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'gt',
       value: 0,
@@ -307,7 +307,7 @@ describe('number operators', () => {
 
   it('correctly executes number.gte conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'gte',
       value: 0,
@@ -319,7 +319,7 @@ describe('number operators', () => {
 
   it('correctly executes number.lt conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'lt',
       value: 1,
@@ -331,7 +331,7 @@ describe('number operators', () => {
 
   it('correctly executes number.lte conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'lte',
       value: 1,
@@ -343,7 +343,7 @@ describe('number operators', () => {
 
   it('correctly executes number.between conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'between',
       value: [0, 0],
@@ -355,7 +355,7 @@ describe('number operators', () => {
 
   it('correctly executes number.not_between conditions', () => {
     const condition: FilterCondition = {
-      field: 'number.1',
+      field: 'inventory.2',
       type: 'number',
       operator: 'not_between',
       value: [0, 0],
@@ -369,7 +369,7 @@ describe('number operators', () => {
 describe('string operators', () => {
   it('correctly executes string.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'known',
     };
@@ -383,7 +383,7 @@ describe('string operators', () => {
 
   it('correctly executes string.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'unknown',
     };
@@ -408,7 +408,7 @@ describe('string operators', () => {
 
   it('correctly executes string.eq conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'eq',
       value: 'string',
@@ -420,7 +420,7 @@ describe('string operators', () => {
 
   it('correctly executes string.neq conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'neq',
       value: 'string',
@@ -432,7 +432,7 @@ describe('string operators', () => {
 
   it('correctly executes string.matches conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'matches',
       value: 'r*ng',
@@ -444,7 +444,7 @@ describe('string operators', () => {
 
   it('correctly executes string.not_matches conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'not_matches',
       value: 'r*ng',
@@ -456,7 +456,7 @@ describe('string operators', () => {
 
   it('correctly executes string.any_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'any_of',
       value: ['string', ''],
@@ -471,7 +471,7 @@ describe('string operators', () => {
 
   it('correctly executes string.none_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'string.1',
+      field: 'inventory.3',
       type: 'string',
       operator: 'none_of',
       value: ['string'],
@@ -485,7 +485,7 @@ describe('string operators', () => {
 describe('enum operators', () => {
   it('correctly executes enum.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'known',
     };
@@ -496,7 +496,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'unknown',
     };
@@ -522,7 +522,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.eq conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'eq',
       value: 'alternative1',
@@ -534,7 +534,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.neq conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'neq',
       value: 'alternative2',
@@ -546,7 +546,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.matches conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'matches',
       value: 'lter*ive',
@@ -558,7 +558,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.not_matches conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'not_matches',
       value: 'r*ng',
@@ -570,7 +570,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.any_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'any_of',
       value: ['alternative1'],
@@ -582,7 +582,7 @@ describe('enum operators', () => {
 
   it('correctly executes enum.none_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'none_of',
       value: ['alternative2'],
@@ -596,7 +596,7 @@ describe('enum operators', () => {
 describe('date operators', () => {
   it('correctly executes date.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'known',
     };
@@ -607,7 +607,7 @@ describe('date operators', () => {
 
   it('correctly executes date.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'unknown',
     };
@@ -632,7 +632,7 @@ describe('date operators', () => {
 
   it('correctly executes date.before conditions', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'before',
       value: DateTime.utc().minus({ minutes: 10 }),
@@ -644,7 +644,7 @@ describe('date operators', () => {
 
   it('correctly executes date.after conditions', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'after',
       value: DateTime.utc().minus({ minutes: 10 }),
@@ -656,7 +656,7 @@ describe('date operators', () => {
 
   it('correctly executes date.between', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'between',
       value: [DateTime.utc().minus({ minutes: 10 }), DateTime.utc()],
@@ -668,7 +668,7 @@ describe('date operators', () => {
 
   it('correctly executes date.not_between', () => {
     const condition: FilterCondition = {
-      field: 'date.1',
+      field: 'inventory.4',
       type: 'date',
       operator: 'not_between',
       value: [DateTime.utc().minus({ minutes: 10 }), DateTime.utc()],
@@ -682,7 +682,7 @@ describe('date operators', () => {
 describe('photo operators', () => {
   it('correctly executes photo.known operators', () => {
     const condition: FilterCondition = {
-      field: 'photo.1',
+      field: 'inventory.7',
       type: 'photo',
       operator: 'known',
     };
@@ -693,7 +693,7 @@ describe('photo operators', () => {
 
   it('correctly executes photo.unknown operators', () => {
     const condition: FilterCondition = {
-      field: 'photo.1',
+      field: 'inventory.7',
       type: 'photo',
       operator: 'unknown',
     };
@@ -721,7 +721,7 @@ describe('photo operators', () => {
 describe('array:number operators', () => {
   it('correctly executes array:number.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-number.1',
+      field: 'inventory.8',
       type: 'array:number',
       operator: 'known',
     };
@@ -735,7 +735,7 @@ describe('array:number operators', () => {
 
   it('correctly executes array:number.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-number.1',
+      field: 'inventory.8',
       type: 'array:number',
       operator: 'unknown',
     };
@@ -760,7 +760,7 @@ describe('array:number operators', () => {
 
   it('correctly executes array:number.none_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-number.1',
+      field: 'inventory.8',
       type: 'array:number',
       operator: 'none_of',
       value: [3, 7],
@@ -772,7 +772,7 @@ describe('array:number operators', () => {
 
   it('correctly executes array:number.any_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-number.1',
+      field: 'inventory.8',
       type: 'array:number',
       operator: 'any_of',
       value: [2, 10],
@@ -784,7 +784,7 @@ describe('array:number operators', () => {
 
   it('correctly executes array:number.all_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-number.1',
+      field: 'inventory.8',
       type: 'array:number',
       operator: 'all_of',
       value: [3, 5],
@@ -798,7 +798,7 @@ describe('array:number operators', () => {
 describe('array:string operators', () => {
   it('correctly executes array:string.known conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-string.1',
+      field: 'inventory.9',
       type: 'array:string',
       operator: 'known',
     };
@@ -812,7 +812,7 @@ describe('array:string operators', () => {
 
   it('correctly executes array:string.unknown conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-string.1',
+      field: 'inventory.9',
       type: 'array:string',
       operator: 'unknown',
     };
@@ -837,7 +837,7 @@ describe('array:string operators', () => {
 
   it('correctly executes array:string.none_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-string.1',
+      field: 'inventory.9',
       type: 'array:string',
       operator: 'none_of',
       value: ['string1'],
@@ -849,7 +849,7 @@ describe('array:string operators', () => {
 
   it('correctly executes array:string.any_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-string.1',
+      field: 'inventory.9',
       type: 'array:string',
       operator: 'any_of',
       value: ['string1'],
@@ -861,7 +861,7 @@ describe('array:string operators', () => {
 
   it('correctly executes array:string.all_of conditions', () => {
     const condition: FilterCondition = {
-      field: 'array-string.1',
+      field: 'inventory.9',
       type: 'array:string',
       operator: 'all_of',
       value: ['string5', 'string6'],
@@ -877,7 +877,7 @@ describe('validation', () => {
     const logic = EntityLogic(schema);
 
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'enum',
       operator: 'any_of',
       value: ['alternative2'],
@@ -891,7 +891,7 @@ describe('validation', () => {
     const logic = EntityLogic(schema);
 
     const condition: FilterCondition = {
-      field: 'enum.1',
+      field: 'inventory.6',
       type: 'string',
       operator: 'any_of',
       value: ['alternative1'],
@@ -902,15 +902,15 @@ describe('validation', () => {
 
   it('correctly validates a set of valid properties', () => {
     const props = {
-      'enum.1': 'alternative2',
-      'boolean.1': true,
-      'number.1': 0,
-      'string.1': 'string',
-      'photo.1': 'https://example.com',
-      'array-number.1': [0, 1, 2],
-      'array-string.1': ['a', 'b', 'c'],
-      'date.1': new Date(),
-      'date.2': new Date().toISOString(),
+      'inventory.6': 'alternative2',
+      'inventory.1': true,
+      'inventory.2': 0,
+      'inventory.3': 'string',
+      'inventory.7': 'https://example.com',
+      'inventory.8': [0, 1, 2],
+      'inventory.9': ['a', 'b', 'c'],
+      'inventory.4': new Date(),
+      'inventory.5': new Date().toISOString(),
     };
 
     const logic = EntityLogic(schema);
@@ -919,7 +919,7 @@ describe('validation', () => {
 
   it('correctly validates an invalid boolean property', () => {
     const props = {
-      'boolean.1': 'string',
+      'inventory.1': 'string',
     };
 
     const logic = EntityLogic(schema);
@@ -928,7 +928,7 @@ describe('validation', () => {
 
   it('correctly validates an invalid number property', () => {
     const props = {
-      'number.1': 'string',
+      'inventory.2': 'string',
     };
 
     const logic = EntityLogic(schema);
@@ -937,7 +937,7 @@ describe('validation', () => {
 
   it('correctly validates an invalid string property', () => {
     const props = {
-      'string.1': 2,
+      'inventory.3': 2,
     };
 
     const logic = EntityLogic(schema);
@@ -946,7 +946,7 @@ describe('validation', () => {
 
   it('correctly validates an invalid date property', () => {
     const props = {
-      'date.1': 'string',
+      'inventory.4': 'string',
     };
 
     const logic = EntityLogic(schema);
@@ -955,7 +955,7 @@ describe('validation', () => {
 
   it('correctly validates an invalid photo property', () => {
     const props = {
-      'photo.1': 3,
+      'inventory.7': 3,
     };
 
     const logic = EntityLogic(schema);
@@ -963,7 +963,7 @@ describe('validation', () => {
   });
   it('correctly validates an invalid array:number property', () => {
     const props = {
-      'array-number.1': ['a'],
+      'inventory.8': ['a'],
     };
 
     const logic = EntityLogic(schema);
@@ -971,7 +971,7 @@ describe('validation', () => {
   });
   it('correctly validates an invalid array:string property', () => {
     const props = {
-      'array-string.1': [2],
+      'inventory.9': [2],
     };
 
     const logic = EntityLogic(schema);
