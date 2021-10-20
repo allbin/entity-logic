@@ -6,7 +6,6 @@ import operators, { Operator } from './operators';
 
 interface EntityLogic {
   execute: (entities: Entity[], filter: Filter) => Entity[];
-  validateSchema: (schema: EntitySchema) => void;
   validateCondition: (condtion: FilterCondition) => Operator;
   validateFilter: (filter: Filter) => Operator[];
   validateProperties: (properties: Record<string, unknown>) => void;
@@ -277,7 +276,6 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
 
   return {
     execute: (entities, filter) => executeFilter(propsByKey, entities, filter),
-    validateSchema: (schema: EntitySchema) => validateSchema(schema),
     validateCondition: (condition: FilterCondition): Operator =>
       validateFilterCondition(propsByKey, condition),
     validateFilter: (filter: Filter): Operator[] =>
@@ -290,4 +288,4 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
 export * from './types/filter';
 export * from './types/schema';
 
-export { EntityLogic };
+export { EntityLogic, validateSchema };
