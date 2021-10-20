@@ -6,6 +6,7 @@ import operators, { Operator } from './operators';
 
 interface EntityLogic {
   execute: (entities: Entity[], filter: Filter) => Entity[];
+  validateSchema: (schema: EntitySchema) => void;
   validateCondition: (condtion: FilterCondition) => Operator;
   validateFilter: (filter: Filter) => Operator[];
   validateProperties: (properties: Record<string, unknown>) => void;
@@ -33,6 +34,107 @@ const executeFilter = (
       executeCondition(schemaPropsByKey, entities, condition),
     entities,
   );
+};
+
+const validateSchema = (schema: EntitySchema): void => {
+  if (!schema.groups) {
+    throw new Error(`Schema is missing the 'groups' property`);
+  }
+  if (!schema.properties) {
+    throw new Error(`Schema is missing the 'properties' property`);
+  }
+
+  schema.groups.forEach((group) => {
+    if (typeof group.id !== 'number') {
+      throw new Error(`Schema group has no/invalid 'id' property`);
+    }
+    if (typeof group.name !== 'string') {
+      throw new Error(`Schema group has no/invalid 'name' property`);
+    }
+  });
+
+  schema.properties.forEach((prop) => {
+    if (
+      !prop.key ||
+      !/^meta\.|^inventory\.|^derived\.|^photo\./.test(prop.key)
+    ) {
+      throw new Error(`Schema prop has no/invalid key`);
+    }
+    if (!prop.type) {
+      throw new Error(`Schema prop has no/invalid type`);
+    }
+    if (!prop.name) {
+      throw new Error(`Schema prop has no/invalid name`);
+    }
+
+    if (
+      ![
+        'boolean',
+        'number',
+        'string',
+        'enum',
+        'date',
+        'photo',
+        'array:number',
+        'array:string',
+      ].includes(prop.type)
+    ) {
+      throw new Error(
+        `Schema prop ${prop.key} has unknown type: '${prop.type}'`,
+      );
+    }
+
+    if (prop.type === 'enum') {
+      if (
+        !prop.alternatives ||
+        !Array.isArray(prop.alternatives) ||
+        prop.alternatives.length === 0
+      ) {
+        throw new Error(
+          `Schema prop ${prop.key} of type 'enum' has no/invalid 'alternatives' property`,
+        );
+      }
+    }
+
+    if (typeof prop.group_id !== 'undefined') {
+      if (typeof prop.group_id !== 'number') {
+        throw new Error(
+          `Schema prop '${prop.key} has invalid 'group_id' property`,
+        );
+      }
+
+      if (!schema.groups.find((group) => group.id === prop.group_id)) {
+        throw new Error(
+          `Schema prop '${prop.key}' is referencing a non-existent group_id: ${prop.group_id}`,
+        );
+      }
+    }
+
+    if (typeof prop.alternatives !== 'undefined') {
+      if (prop.type !== 'enum') {
+        throw new Error(
+          `Schema prop '${prop.key}' has 'alternatives' propety, but is not of type 'enum'`,
+        );
+      }
+    }
+
+    if (
+      typeof prop.help_text !== 'undefined' &&
+      typeof prop.help_text !== 'string'
+    ) {
+      throw new Error(
+        `Schema prop '${prop.key}' has no/invalid 'help_text' property`,
+      );
+    }
+    if (
+      typeof prop.help_image !== 'undefined' &&
+      typeof prop.help_text !== 'string'
+    ) {
+      throw new Error(
+        `Schema prop '${prop.key}' has no/invalid 'help_image' property`,
+      );
+    }
+  });
 };
 
 const validateFilterCondition = (
@@ -164,9 +266,7 @@ const validateProperties = (
 };
 
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
-  if (!schema.properties) {
-    throw new Error('Invalid schema passed to EntityLogic');
-  }
+  validateSchema(schema);
   const propsByKey = schema.properties.reduce<EntitySchemaPropsByKey>(
     (propsByKey, prop) => {
       propsByKey[prop.key] = prop;
@@ -176,8 +276,8 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
   );
 
   return {
-    execute: (entities: Entity[], filter: Filter): Entity[] =>
-      executeFilter(propsByKey, entities, filter),
+    execute: (entities, filter) => executeFilter(propsByKey, entities, filter),
+    validateSchema: (schema: EntitySchema) => validateSchema(schema),
     validateCondition: (condition: FilterCondition): Operator =>
       validateFilterCondition(propsByKey, condition),
     validateFilter: (filter: Filter): Operator[] =>
