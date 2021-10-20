@@ -52,7 +52,6 @@ const schema: EntitySchema = {
       name: 'ArrayString',
     },
   ],
-  translations: {},
 };
 
 const undefinedEntity = {
