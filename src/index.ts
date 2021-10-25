@@ -5,17 +5,17 @@ import { Filter, FilterCondition } from './types/filter';
 import operators, { Operator } from './operators';
 
 interface EntityLogic {
-  execute: (entities: Entity[], filter: Filter) => Entity[];
+  execute: <T>(entities: Entity<T>[], filter: Filter) => Entity<T>[];
   validateCondition: (condtion: FilterCondition) => Operator;
   validateFilter: (filter: Filter) => Operator[];
   validateProperties: (properties: Record<string, unknown>) => void;
 }
 
-const executeCondition = (
+const executeCondition = <T>(
   schemaPropsByKey: EntitySchemaPropsByKey,
-  entities: Entity[],
+  entities: Entity<T>[],
   condition: FilterCondition,
-): Entity[] => {
+): Entity<T>[] => {
   const op = validateFilterCondition(schemaPropsByKey, condition);
 
   return entities.filter((e) =>
@@ -23,14 +23,14 @@ const executeCondition = (
   );
 };
 
-const executeFilter = (
+const executeFilter = <T>(
   schemaPropsByKey: EntitySchemaPropsByKey,
-  entities: Entity[],
+  entities: Entity<T>[],
   conditions: Filter,
-): Entity[] => {
-  return conditions.reduce<Entity[]>(
+): Entity<T>[] => {
+  return conditions.reduce<Entity<T>[]>(
     (entities, condition) =>
-      executeCondition(schemaPropsByKey, entities, condition),
+      executeCondition<T>(schemaPropsByKey, entities, condition),
     entities,
   );
 };

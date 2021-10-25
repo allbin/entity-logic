@@ -81,6 +81,6 @@ export type EntitySchemaProp = {
   help_image?: string;
 };
 
-export type Entity = {
+export type Entity<T = unknown> = T & {
   properties: Record<string, EntitySchemaPropValue>;
 };
