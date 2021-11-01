@@ -40,18 +40,18 @@ interface FilterConditionBase {
   value?: FilterValue;
 }
 
-interface FilterConditionStringNoArgs extends FilterConditionBase {
+export interface FilterConditionStringNoArgs extends FilterConditionBase {
   type: 'string';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionStringSingleArg extends FilterConditionBase {
+export interface FilterConditionStringSingleArg extends FilterConditionBase {
   type: 'string';
   operator: 'eq' | 'neq' | 'matches' | 'not_matches';
   value: string;
 }
 
-interface FilterConditionStringManyArgs extends FilterConditionBase {
+export interface FilterConditionStringManyArgs extends FilterConditionBase {
   type: 'string';
   operator: 'none_of' | 'any_of';
   value: string[];
@@ -62,18 +62,18 @@ export type FilterConditionString =
   | FilterConditionStringSingleArg
   | FilterConditionStringManyArgs;
 
-interface FilterConditionEnumNoArgs extends FilterConditionBase {
+export interface FilterConditionEnumNoArgs extends FilterConditionBase {
   type: 'enum';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionEnumSingleArg extends FilterConditionBase {
+export interface FilterConditionEnumSingleArg extends FilterConditionBase {
   type: 'enum';
   operator: 'eq' | 'neq' | 'matches' | 'not_matches';
   value: string;
 }
 
-interface FilterConditionEnumManyArgs extends FilterConditionBase {
+export interface FilterConditionEnumManyArgs extends FilterConditionBase {
   type: 'enum';
   operator: 'none_of' | 'any_of';
   value: string[];
@@ -84,18 +84,18 @@ export type FilterConditionEnum =
   | FilterConditionEnumSingleArg
   | FilterConditionEnumManyArgs;
 
-interface FilterConditionNumberNoArgs extends FilterConditionBase {
+export interface FilterConditionNumberNoArgs extends FilterConditionBase {
   type: 'number';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionNumberSingleArg extends FilterConditionBase {
+export interface FilterConditionNumberSingleArg extends FilterConditionBase {
   type: 'number';
   operator: 'eq' | 'neq' | 'gt' | 'gte' | 'lt' | 'lte';
   value: number;
 }
 
-interface FilterConditionNumberManyArgs extends FilterConditionBase {
+export interface FilterConditionNumberManyArgs extends FilterConditionBase {
   type: 'number';
   operator: 'between' | 'not_between';
   value: number[];
@@ -106,25 +106,25 @@ export type FilterConditionNumber =
   | FilterConditionNumberSingleArg
   | FilterConditionNumberManyArgs;
 
-interface FilterConditionBooleanNoArg extends FilterConditionBase {
+export interface FilterConditionBooleanNoArg extends FilterConditionBase {
   type: 'boolean';
   operator: 'known' | 'unknown' | 'true' | 'false';
 }
 
 export type FilterConditionBoolean = FilterConditionBooleanNoArg;
 
-interface FilterConditionDateTimeNoArgs extends FilterConditionBase {
+export interface FilterConditionDateTimeNoArgs extends FilterConditionBase {
   type: 'date';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionDateTimeSingleArg extends FilterConditionBase {
+export interface FilterConditionDateTimeSingleArg extends FilterConditionBase {
   type: 'date';
   operator: 'before' | 'after';
   value: DateTime;
 }
 
-interface FilterConditionDateTimeManyArgs extends FilterConditionBase {
+export interface FilterConditionDateTimeManyArgs extends FilterConditionBase {
   type: 'date';
   operator: 'between' | 'not_between';
   value: DateTime[];
@@ -135,19 +135,20 @@ export type FilterConditionDateTime =
   | FilterConditionDateTimeSingleArg
   | FilterConditionDateTimeManyArgs;
 
-interface FilterConditionPhotoNoArg extends FilterConditionBase {
+export interface FilterConditionPhotoNoArg extends FilterConditionBase {
   type: 'photo';
   operator: 'known' | 'unknown';
 }
 
 export type FilterConditionPhoto = FilterConditionPhotoNoArg;
 
-interface FilterConditionStringArrayNoArgs extends FilterConditionBase {
+export interface FilterConditionStringArrayNoArgs extends FilterConditionBase {
   type: 'array:string';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionStringArrayManyArgs extends FilterConditionBase {
+export interface FilterConditionStringArrayManyArgs
+  extends FilterConditionBase {
   type: 'array:string';
   operator: 'none_of' | 'any_of' | 'all_of';
   value: string[];
@@ -157,12 +158,13 @@ export type FilterConditionStringArray =
   | FilterConditionStringArrayNoArgs
   | FilterConditionStringArrayManyArgs;
 
-interface FilterConditionNumberArrayNoArgs extends FilterConditionBase {
+export interface FilterConditionNumberArrayNoArgs extends FilterConditionBase {
   type: 'array:number';
   operator: 'known' | 'unknown';
 }
 
-interface FilterConditionNumberArrayManyArgs extends FilterConditionBase {
+export interface FilterConditionNumberArrayManyArgs
+  extends FilterConditionBase {
   type: 'array:number';
   operator: 'none_of' | 'any_of' | 'all_of';
   value: number[];
