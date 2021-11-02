@@ -121,6 +121,20 @@ const operators: OperatorFunctions = {
           typeof prop_val === 'number' &&
           (prop_val < min || prop_val > max),
     },
+    none_of: {
+      params: ['array:number'],
+      func: (field, vals) => (entity, prop_val) =>
+        Array.isArray(vals) &&
+        typeof prop_val === 'number' &&
+        !vals.some((v) => v === prop_val),
+    },
+    any_of: {
+      params: ['array:number'],
+      func: (field, vals) => (entity, prop_val) =>
+        Array.isArray(vals) &&
+        typeof prop_val === 'number' &&
+        vals.some((v) => v === prop_val),
+    },
   },
   string: {
     known: {
@@ -161,25 +175,25 @@ const operators: OperatorFunctions = {
         typeof val === 'string' &&
         !escapeAndCompileRegex(val).test(prop_val),
     },
-    any_of: {
-      params: ['array:string'],
-      func: (field, vals) => (entity, prop_val) =>
-        Array.isArray(vals) &&
-        typeof prop_val === 'string' &&
-        vals.find(
-          (v) =>
-            typeof v === 'string' && v.toLowerCase() === prop_val.toLowerCase(),
-        ) !== undefined,
-    },
     none_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_val) =>
         Array.isArray(vals) &&
         typeof prop_val === 'string' &&
-        vals.find(
+        !vals.some(
           (v) =>
             typeof v === 'string' && v.toLowerCase() === prop_val.toLowerCase(),
-        ) === undefined,
+        ),
+    },
+    any_of: {
+      params: ['array:string'],
+      func: (field, vals) => (entity, prop_val) =>
+        Array.isArray(vals) &&
+        typeof prop_val === 'string' &&
+        vals.some(
+          (v) =>
+            typeof v === 'string' && v.toLowerCase() === prop_val.toLowerCase(),
+        ),
     },
   },
   enum: {
@@ -323,7 +337,7 @@ const operators: OperatorFunctions = {
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
-        vals.find((v) => prop_vals.includes(v)) === undefined,
+        !vals.some((v) => prop_vals.includes(v)),
     },
     any_of: {
       params: ['array:number'],
@@ -360,7 +374,7 @@ const operators: OperatorFunctions = {
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
-        vals.find((v) => prop_vals.includes(v)) === undefined,
+        !vals.some((v) => prop_vals.includes(v)),
     },
     any_of: {
       params: ['array:string'],

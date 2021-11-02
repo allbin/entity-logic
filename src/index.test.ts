@@ -370,6 +370,30 @@ describe('number operators', () => {
     const result = entityLogic.execute(entities, [condition]);
     expect(result).toMatchObject([numberOneEntity]);
   });
+
+  it('correctly executes number.none_of conditions', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.2',
+      type: 'number',
+      operator: 'none_of',
+      value: [1, 2],
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([numberZeroEntity]);
+  });
+
+  it('correctly executes number.any_of conditions', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.2',
+      type: 'number',
+      operator: 'any_of',
+      value: [1, 2],
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([numberOneEntity]);
+  });
 });
 
 describe('string operators', () => {

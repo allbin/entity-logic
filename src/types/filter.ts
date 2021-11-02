@@ -97,7 +97,7 @@ export interface FilterConditionNumberSingleArg extends FilterConditionBase {
 
 export interface FilterConditionNumberManyArgs extends FilterConditionBase {
   type: 'number';
-  operator: 'between' | 'not_between';
+  operator: 'between' | 'not_between' | 'none_of' | 'any_of';
   value: number[];
 }
 
