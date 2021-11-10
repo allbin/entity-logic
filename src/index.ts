@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 import { Entity, EntitySchema, EntitySchemaPropsByKey } from './types/schema';
 
 import { Filter, FilterCondition } from './types/filter';
@@ -160,7 +162,153 @@ const validateFilterCondition = (
     );
   }
 
-  // FIXME: validate filter values
+  if (
+    condition.operator === 'known' ||
+    condition.operator === 'unknown' ||
+    condition.operator === 'true' ||
+    condition.operator === 'false'
+  ) {
+    if (typeof condition.value !== 'undefined') {
+      throw new Error(
+        `Invalid condition value for ${condition.type}:${condition.operator}`,
+      );
+    }
+  }
+
+  if (condition.type === 'number') {
+    switch (condition.operator) {
+      case 'eq':
+      case 'neq':
+      case 'gt':
+      case 'gte':
+      case 'lt':
+      case 'lte':
+        if (typeof condition.value !== 'number') {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+      case 'between':
+      case 'not_between':
+      case 'none_of':
+      case 'any_of':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some((v) => typeof v !== 'number')
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  } else if (condition.type === 'string') {
+    switch (condition.operator) {
+      case 'eq':
+      case 'neq':
+      case 'matches':
+      case 'not_matches':
+        if (typeof condition.value !== 'string') {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+      case 'none_of':
+      case 'any_of':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some((v) => typeof v !== 'string')
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  } else if (condition.type === 'enum') {
+    switch (condition.operator) {
+      case 'eq':
+      case 'neq':
+      case 'matches':
+      case 'not_matches':
+        if (typeof condition.value !== 'string') {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+      case 'none_of':
+      case 'any_of':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some(
+            (v) =>
+              typeof v !== 'string' ||
+              !prop.alternatives ||
+              !prop.alternatives.includes(v),
+          )
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  } else if (condition.type === 'date') {
+    switch (condition.operator) {
+      case 'before':
+      case 'after':
+        if (!DateTime.isDateTime(condition.value)) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+      case 'between':
+      case 'not_between':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some((v) => !DateTime.isDateTime(v))
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  } else if (condition.type === 'array:number') {
+    switch (condition.operator) {
+      case 'none_of':
+      case 'any_of':
+      case 'all_of':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some((v) => typeof v !== 'number')
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  } else if (condition.type === 'array:string') {
+    switch (condition.operator) {
+      case 'none_of':
+      case 'any_of':
+      case 'all_of':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.some((v) => typeof v !== 'string')
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
+  }
 
   return op;
 };
