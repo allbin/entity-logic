@@ -70,7 +70,7 @@ const operators: OperatorFunctions = {
     neq: {
       params: ['number'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'number' && prop_val !== val,
+        !(typeof prop_val === 'number' && prop_val === val),
     },
     gt: {
       params: ['number'],
@@ -116,17 +116,22 @@ const operators: OperatorFunctions = {
       func:
         (field, [min, max]) =>
         (entity, prop_val) =>
-          typeof min == 'number' &&
-          typeof max === 'number' &&
-          typeof prop_val === 'number' &&
-          (prop_val < min || prop_val > max),
+          !(
+            typeof min === 'number' &&
+            typeof max === 'number' &&
+            typeof prop_val === 'number' &&
+            prop_val >= min &&
+            prop_val <= max
+          ),
     },
     none_of: {
       params: ['array:number'],
       func: (field, vals) => (entity, prop_val) =>
-        Array.isArray(vals) &&
-        typeof prop_val === 'number' &&
-        !vals.some((v) => v === prop_val),
+        !(
+          Array.isArray(vals) &&
+          typeof prop_val === 'number' &&
+          vals.some((v) => v === prop_val)
+        ),
     },
     any_of: {
       params: ['array:number'],
@@ -159,7 +164,7 @@ const operators: OperatorFunctions = {
     neq: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'string' && prop_val !== val,
+        !(typeof prop_val === 'string' && prop_val === val),
     },
     matches: {
       params: ['string'],
@@ -171,18 +176,23 @@ const operators: OperatorFunctions = {
     not_matches: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'string' &&
-        typeof val === 'string' &&
-        !escapeAndCompileRegex(val).test(prop_val),
+        !(
+          typeof prop_val === 'string' &&
+          typeof val === 'string' &&
+          escapeAndCompileRegex(val).test(prop_val)
+        ),
     },
     none_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_val) =>
-        Array.isArray(vals) &&
-        typeof prop_val === 'string' &&
-        !vals.some(
-          (v) =>
-            typeof v === 'string' && v.toLowerCase() === prop_val.toLowerCase(),
+        !(
+          Array.isArray(vals) &&
+          typeof prop_val === 'string' &&
+          vals.some(
+            (v) =>
+              typeof v === 'string' &&
+              v.toLowerCase() === prop_val.toLowerCase(),
+          )
         ),
     },
     any_of: {
@@ -219,7 +229,7 @@ const operators: OperatorFunctions = {
     neq: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'string' && prop_val !== val,
+        !(typeof prop_val === 'string' && prop_val === val),
     },
     matches: {
       params: ['string'],
@@ -231,9 +241,20 @@ const operators: OperatorFunctions = {
     not_matches: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'string' &&
-        typeof val === 'string' &&
-        !escapeAndCompileRegex(val).test(prop_val),
+        !(
+          typeof prop_val === 'string' &&
+          typeof val === 'string' &&
+          escapeAndCompileRegex(val).test(prop_val)
+        ),
+    },
+    none_of: {
+      params: ['array:string'],
+      func: (field, vals) => (entity, prop_val) =>
+        !(
+          Array.isArray(vals) &&
+          typeof prop_val === 'string' &&
+          vals.includes(prop_val)
+        ),
     },
     any_of: {
       params: ['array:string'],
@@ -241,13 +262,6 @@ const operators: OperatorFunctions = {
         Array.isArray(vals) &&
         typeof prop_val === 'string' &&
         vals.includes(prop_val),
-    },
-    none_of: {
-      params: ['array:string'],
-      func: (field, vals) => (entity, prop_val) =>
-        Array.isArray(vals) &&
-        typeof prop_val === 'string' &&
-        !vals.includes(prop_val),
     },
   },
   date: {
@@ -295,10 +309,13 @@ const operators: OperatorFunctions = {
       func:
         (field, [from, to]) =>
         (entity, prop_val) =>
-          DateTime.isDateTime(from) &&
-          DateTime.isDateTime(to) &&
-          DateTime.isDateTime(prop_val) &&
-          (prop_val < from || prop_val > to),
+          !(
+            DateTime.isDateTime(from) &&
+            DateTime.isDateTime(to) &&
+            DateTime.isDateTime(prop_val) &&
+            prop_val >= from &&
+            prop_val <= to
+          ),
     },
   },
   photo: {
@@ -335,9 +352,11 @@ const operators: OperatorFunctions = {
     none_of: {
       params: ['array:number'],
       func: (field, vals) => (entity, prop_vals) =>
-        Array.isArray(prop_vals) &&
-        Array.isArray(vals) &&
-        !vals.some((v) => prop_vals.includes(v)),
+        !(
+          Array.isArray(prop_vals) &&
+          Array.isArray(vals) &&
+          vals.some((v) => prop_vals.includes(v))
+        ),
     },
     any_of: {
       params: ['array:number'],
@@ -372,9 +391,11 @@ const operators: OperatorFunctions = {
     none_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_vals) =>
-        Array.isArray(prop_vals) &&
-        Array.isArray(vals) &&
-        !vals.some((v) => prop_vals.includes(v)),
+        !(
+          Array.isArray(prop_vals) &&
+          Array.isArray(vals) &&
+          vals.some((v) => prop_vals.includes(v))
+        ),
     },
     any_of: {
       params: ['array:string'],
