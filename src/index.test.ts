@@ -296,7 +296,22 @@ describe('number operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([numberOneEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes number.gt conditions', () => {
@@ -368,7 +383,22 @@ describe('number operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([numberOneEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes number.none_of conditions', () => {
@@ -380,7 +410,22 @@ describe('number operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([numberZeroEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes number.any_of conditions', () => {
@@ -457,7 +502,22 @@ describe('string operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([stringWithNoLengthEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes string.matches conditions', () => {
@@ -481,7 +541,49 @@ describe('string operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([stringWithNoLengthEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
+  });
+
+  it('correctly executes string.none_of conditions', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.3',
+      type: 'string',
+      operator: 'none_of',
+      value: ['string'],
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes string.any_of conditions', () => {
@@ -497,18 +599,6 @@ describe('string operators', () => {
       stringWithLengthEntity,
       stringWithNoLengthEntity,
     ]);
-  });
-
-  it('correctly executes string.none_of conditions', () => {
-    const condition: FilterCondition = {
-      field: 'inventory.3',
-      type: 'string',
-      operator: 'none_of',
-      value: ['string'],
-    };
-
-    const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([stringWithNoLengthEntity]);
   });
 });
 
@@ -571,7 +661,23 @@ describe('enum operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([enumEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes enum.matches conditions', () => {
@@ -595,19 +701,23 @@ describe('enum operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([enumEntity]);
-  });
-
-  it('correctly executes enum.any_of conditions', () => {
-    const condition: FilterCondition = {
-      field: 'inventory.6',
-      type: 'enum',
-      operator: 'any_of',
-      value: ['alternative1'],
-    };
-
-    const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([enumEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes enum.none_of conditions', () => {
@@ -616,6 +726,34 @@ describe('enum operators', () => {
       type: 'enum',
       operator: 'none_of',
       value: ['alternative2'],
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
+  });
+
+  it('correctly executes enum.any_of conditions', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.6',
+      type: 'enum',
+      operator: 'any_of',
+      value: ['alternative1'],
     };
 
     const result = entityLogic.execute(entities, [condition]);
@@ -705,7 +843,22 @@ describe('date operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([dateEpochEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 });
 
@@ -797,7 +950,22 @@ describe('array:number operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([arrayEvenNumbersEntity]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes array:number.any_of conditions', () => {
@@ -874,7 +1042,22 @@ describe('array:string operators', () => {
     };
 
     const result = entityLogic.execute(entities, [condition]);
-    expect(result).toMatchObject([arrayStringEntitySecond]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntitySecond,
+    ]);
   });
 
   it('correctly executes array:string.any_of conditions', () => {
