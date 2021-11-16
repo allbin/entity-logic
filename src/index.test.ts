@@ -12,50 +12,64 @@ const schema: EntitySchema = {
   groups: [],
   properties: [
     {
+      key: 'meta.id',
+      type: 'string',
+      name: 'ID',
+    },
+    {
       key: 'inventory.1',
       type: 'boolean',
       name: 'boolean',
+      modifiable: true,
     },
     {
       key: 'inventory.2',
       type: 'number',
       name: 'number',
+      modifiable: true,
     },
     {
       key: 'inventory.3',
       type: 'string',
       name: 'string',
+      modifiable: true,
     },
     {
       key: 'inventory.4',
       type: 'date',
       name: 'date',
+      modifiable: true,
     },
     {
       key: 'inventory.5',
       type: 'date',
       name: 'datestring',
+      modifiable: true,
     },
     {
       key: 'inventory.6',
       type: 'enum',
       name: 'enum',
       alternatives: ['alternative1', 'alternative2'],
+      modifiable: true,
     },
     {
       key: 'inventory.7',
       type: 'photo',
       name: 'photo',
+      modifiable: true,
     },
     {
       key: 'inventory.8',
       type: 'array:number',
       name: 'arraynumber',
+      modifiable: true,
     },
     {
       key: 'inventory.9',
       type: 'array:string',
       name: 'arraystring',
+      modifiable: true,
     },
   ],
 };
@@ -1207,5 +1221,33 @@ describe('validation', () => {
       ],
     };
     expect(() => validateSchema(invalid_schema)).toThrow();
+  });
+
+  it('correctly validates readonly properties', () => {
+    const prev_props = {
+      'meta.id': 'something',
+    };
+    const props = {
+      'meta.id': 'somethingelse',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).toThrow();
+  });
+
+  it('correctly validates modifiable properties', () => {
+    const prev_props = {
+      'inventory.3': 'something',
+    };
+    const props = {
+      'inventory.3': 'somethingelse',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).not.toThrow();
   });
 });

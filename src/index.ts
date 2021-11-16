@@ -11,6 +11,10 @@ interface EntityLogic {
   validateCondition: (condtion: FilterCondition) => Operator;
   validateFilter: (filter: Filter) => Operator[];
   validateProperties: (properties: Record<string, unknown>) => void;
+  validatePropertiesModifiable: (
+    prev_properties: Record<string, unknown>,
+    properties: Record<string, unknown>,
+  ) => void;
 }
 
 const executeCondition = <T>(
@@ -412,6 +416,29 @@ const validateProperties = (
   });
 };
 
+const validatePropertiesModifiable = (
+  schemaPropsByKey: EntitySchemaPropsByKey,
+  prev_properties: Record<string, unknown>,
+  properties: Record<string, unknown>,
+): void => {
+  Object.keys(properties).forEach((p) => {
+    const schema_prop = schemaPropsByKey[p];
+
+    if (!schema_prop) {
+      throw new Error(`Unknown property '${p}'`);
+    }
+
+    const prev_val = prev_properties[p];
+    const prop_val = properties[p];
+
+    if (!schema_prop.modifiable && prev_val !== prop_val) {
+      throw new Error(
+        `Properties include modification to readonly property ${p}`,
+      );
+    }
+  });
+};
+
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
   validateSchema(schema);
   const propsByKey = schema.properties.reduce<EntitySchemaPropsByKey>(
@@ -430,6 +457,10 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
       validateFilter(propsByKey, filter),
     validateProperties: (properties: Record<string, unknown>) =>
       validateProperties(propsByKey, properties),
+    validatePropertiesModifiable: (
+      prev_properties: Record<string, unknown>,
+      properties: Record<string, unknown>,
+    ) => validatePropertiesModifiable(propsByKey, prev_properties, properties),
   };
 };
 
