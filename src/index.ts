@@ -122,23 +122,6 @@ const validateSchema = (schema: EntitySchema): void => {
         );
       }
     }
-
-    if (
-      typeof prop.help_text !== 'undefined' &&
-      typeof prop.help_text !== 'string'
-    ) {
-      throw new Error(
-        `Schema prop '${prop.key}' has no/invalid 'help_text' property`,
-      );
-    }
-    if (
-      typeof prop.help_image !== 'undefined' &&
-      typeof prop.help_text !== 'string'
-    ) {
-      throw new Error(
-        `Schema prop '${prop.key}' has no/invalid 'help_image' property`,
-      );
-    }
   });
 };
 
