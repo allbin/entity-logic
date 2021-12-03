@@ -2,7 +2,12 @@ import { DateTime } from 'luxon';
 
 import { Entity, EntitySchema, EntitySchemaPropsByKey } from './types/schema';
 
-import { Filter, FilterCondition } from './types/filter';
+import {
+  Filter,
+  FilterCondition,
+  SerializedFilter,
+  SerializedFilterCondition,
+} from './types/filter';
 
 import operators, { Operator } from './operators';
 
@@ -15,6 +20,16 @@ interface EntityLogic {
     prev_properties: Record<string, unknown>,
     properties: Record<string, unknown>,
   ) => void;
+
+  serializeFilterCondition: (
+    condition: FilterCondition,
+  ) => SerializedFilterCondition;
+  unserializeFilterCondition: (
+    condition: SerializedFilterCondition,
+  ) => FilterCondition;
+
+  serializeFilter: (filter: Filter) => SerializedFilter;
+  unserializeFilter: (filter: SerializedFilter) => Filter;
 }
 
 const executeCondition = <T>(
@@ -422,6 +437,41 @@ const validatePropertiesModifiable = (
   });
 };
 
+const serializeFilterCondition = (
+  condition: FilterCondition,
+): SerializedFilterCondition => {
+  if (condition.type === 'date') {
+    if (condition.operator === 'before' || condition.operator === 'after') {
+      return { ...condition, value: condition.value.toISO() };
+    } else if (
+      condition.operator === 'between' ||
+      condition.operator === 'not_between'
+    ) {
+      return { ...condition, value: condition.value.map((c) => c.toISO()) };
+    }
+  }
+  return condition as SerializedFilterCondition;
+};
+
+const unserializeFilterCondition = (
+  condition: SerializedFilterCondition,
+): FilterCondition => {
+  if (condition.type === 'date') {
+    if (condition.operator === 'before' || condition.operator === 'after') {
+      return { ...condition, value: DateTime.fromISO(condition.value) };
+    } else if (
+      condition.operator === 'between' ||
+      condition.operator === 'not_between'
+    ) {
+      return {
+        ...condition,
+        value: condition.value.map((c) => DateTime.fromISO(c)),
+      };
+    }
+  }
+  return condition as FilterCondition;
+};
+
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
   validateSchema(schema);
   const propsByKey = schema.properties.reduce<EntitySchemaPropsByKey>(
@@ -444,6 +494,15 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
       prev_properties: Record<string, unknown>,
       properties: Record<string, unknown>,
     ) => validatePropertiesModifiable(propsByKey, prev_properties, properties),
+
+    serializeFilterCondition: (condition) =>
+      serializeFilterCondition(condition),
+    unserializeFilterCondition: (condition) =>
+      unserializeFilterCondition(condition),
+    serializeFilter: (filter) =>
+      filter.map((fc) => serializeFilterCondition(fc)),
+    unserializeFilter: (filter) =>
+      filter.map((fc) => unserializeFilterCondition(fc)),
   };
 };
 

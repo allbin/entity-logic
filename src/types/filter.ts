@@ -135,6 +135,25 @@ export type FilterConditionDateTime =
   | FilterConditionDateTimeSingleArg
   | FilterConditionDateTimeManyArgs;
 
+export interface FilterConditionSerializedDateTimeSingleArg
+  extends FilterConditionBase {
+  type: 'date';
+  operator: 'before' | 'after';
+  value: string;
+}
+
+export interface FilterConditionSerializedDateTimeManyArgs
+  extends FilterConditionBase {
+  type: 'date';
+  operator: 'between' | 'not_between';
+  value: string[];
+}
+
+export type FilterConditionSerializedDateTime =
+  | FilterConditionDateTimeNoArgs
+  | FilterConditionSerializedDateTimeSingleArg
+  | FilterConditionSerializedDateTimeManyArgs;
+
 export interface FilterConditionPhotoNoArg extends FilterConditionBase {
   type: 'photo';
   operator: 'known' | 'unknown';
@@ -184,4 +203,15 @@ export type FilterCondition =
   | FilterConditionStringArray
   | FilterConditionNumberArray;
 
+export type SerializedFilterCondition =
+  | FilterConditionBoolean
+  | FilterConditionNumber
+  | FilterConditionString
+  | FilterConditionEnum
+  | FilterConditionSerializedDateTime
+  | FilterConditionPhoto
+  | FilterConditionStringArray
+  | FilterConditionNumberArray;
+
 export type Filter = FilterCondition[];
+export type SerializedFilter = SerializedFilterCondition[];
