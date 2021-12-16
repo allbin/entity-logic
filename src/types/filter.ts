@@ -189,6 +189,13 @@ export interface FilterConditionNumberArrayManyArgs
   value: number[];
 }
 
+export interface FilterConditionLocationNoArgs extends FilterConditionBase {
+  type: 'location';
+  operator: 'known' | 'unknown';
+}
+
+export type FilterConditionLocation = FilterConditionLocationNoArgs;
+
 export type FilterConditionNumberArray =
   | FilterConditionNumberArrayNoArgs
   | FilterConditionNumberArrayManyArgs;
@@ -201,7 +208,8 @@ export type FilterCondition =
   | FilterConditionDateTime
   | FilterConditionPhoto
   | FilterConditionStringArray
-  | FilterConditionNumberArray;
+  | FilterConditionNumberArray
+  | FilterConditionLocation;
 
 export type SerializedFilterCondition =
   | FilterConditionBoolean
@@ -211,7 +219,8 @@ export type SerializedFilterCondition =
   | FilterConditionSerializedDateTime
   | FilterConditionPhoto
   | FilterConditionStringArray
-  | FilterConditionNumberArray;
+  | FilterConditionNumberArray
+  | FilterConditionLocation;
 
 export type Filter = FilterCondition[];
 export type SerializedFilter = SerializedFilterCondition[];

@@ -412,6 +412,22 @@ const operators: OperatorFunctions = {
         vals.every((v) => prop_vals.includes(v)),
     },
   },
+  location: {
+    known: {
+      params: ['number', 'number'],
+      func: (field) => (entity) =>
+        Object.prototype.hasOwnProperty.call(entity.properties, field) &&
+        entity.properties[field] !== undefined &&
+        entity.properties[field] !== null,
+    },
+    unknown: {
+      params: [],
+      func: (field) => (entity) =>
+        !Object.prototype.hasOwnProperty.call(entity.properties, field) ||
+        entity.properties[field] === undefined ||
+        entity.properties[field] === null,
+    },
+  },
 };
 
 export default operators;

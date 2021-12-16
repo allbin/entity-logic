@@ -17,6 +17,12 @@ const schema: EntitySchema = {
       name: 'ID',
     },
     {
+      key: 'meta.location',
+      type: 'location',
+      name: 'Koordinat',
+      modifiable: true,
+    },
+    {
       key: 'inventory.1',
       type: 'boolean',
       name: 'boolean',
@@ -172,6 +178,13 @@ const arrayStringEntitySecond = {
   },
 };
 
+const locationEntity = {
+  properties: {
+    'meta.id': 'location_id',
+    'meta.location': [15.6, 56.2],
+  },
+};
+
 const entities: Entity[] = [
   undefinedEntity,
   booleanFalseEntity,
@@ -188,6 +201,7 @@ const entities: Entity[] = [
   arrayOddNumbersEntity,
   arrayStringEntityFirst,
   arrayStringEntitySecond,
+  locationEntity,
 ];
 
 const entityLogic = EntityLogic(schema);
@@ -226,6 +240,7 @@ describe('boolean operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -286,6 +301,7 @@ describe('number operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -325,6 +341,7 @@ describe('number operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -412,6 +429,7 @@ describe('number operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -439,6 +457,7 @@ describe('number operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -492,6 +511,7 @@ describe('string operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -531,6 +551,7 @@ describe('string operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -570,6 +591,7 @@ describe('string operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -597,6 +619,7 @@ describe('string operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -651,6 +674,7 @@ describe('enum operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -691,6 +715,7 @@ describe('enum operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -731,6 +756,7 @@ describe('enum operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -759,6 +785,7 @@ describe('enum operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -809,6 +836,7 @@ describe('date operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -872,6 +900,7 @@ describe('date operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 });
@@ -911,6 +940,7 @@ describe('photo operators', () => {
       arrayOddNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 });
@@ -952,6 +982,7 @@ describe('array:number operators', () => {
       photoEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -979,6 +1010,7 @@ describe('array:number operators', () => {
       arrayEvenNumbersEntity,
       arrayStringEntityFirst,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -1044,6 +1076,7 @@ describe('array:string operators', () => {
       photoEntity,
       arrayEvenNumbersEntity,
       arrayOddNumbersEntity,
+      locationEntity,
     ]);
   });
 
@@ -1071,6 +1104,7 @@ describe('array:string operators', () => {
       arrayEvenNumbersEntity,
       arrayOddNumbersEntity,
       arrayStringEntitySecond,
+      locationEntity,
     ]);
   });
 
@@ -1096,6 +1130,46 @@ describe('array:string operators', () => {
 
     const result = entityLogic.execute(entities, [condition]);
     expect(result).toMatchObject([arrayStringEntitySecond]);
+  });
+});
+
+describe('location operators', () => {
+  it('correctly executes location.known conditions', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'known',
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([locationEntity]);
+  });
+
+  it('correctly executes location.unknown conditions', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'unknown',
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+    ]);
   });
 });
 
@@ -1199,6 +1273,15 @@ describe('validation', () => {
   it('correctly validates an invalid array:string property', () => {
     const props = {
       'inventory.9': [2],
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() => logic.validateProperties(props)).toThrow();
+  });
+
+  it('correctly validates an invalid location property', () => {
+    const props = {
+      'meta.location': [1],
     };
 
     const logic = EntityLogic(schema);

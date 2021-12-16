@@ -35,7 +35,8 @@ export type EntitySchemaPropType =
   | 'enum'
   | 'number'
   | 'photo'
-  | 'string';
+  | 'string'
+  | 'location';
 
 export type EntitySchemaPropValue =
   | undefined

@@ -74,10 +74,7 @@ const validateSchema = (schema: EntitySchema): void => {
   });
 
   schema.properties.forEach((prop) => {
-    if (
-      !prop.key ||
-      !/^meta\.|^inventory\.|^derived\.|^photo\./.test(prop.key)
-    ) {
+    if (!prop.key || !/^meta\.|^inventory\.|^derived\./.test(prop.key)) {
       throw new Error(`Schema prop has no/invalid key`);
     }
     if (!prop.type) {
@@ -97,6 +94,7 @@ const validateSchema = (schema: EntitySchema): void => {
         'photo',
         'array:number',
         'array:string',
+        'location',
       ].includes(prop.type)
     ) {
       throw new Error(
@@ -406,6 +404,18 @@ const validateProperties = (
         ) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be an array of strings`,
+          );
+        }
+        break;
+      }
+      case 'location': {
+        if (
+          !Array.isArray(prop_value) ||
+          prop_value.length < 2 ||
+          prop_value.some((v) => typeof v !== 'number')
+        ) {
+          throw new Error(
+            `Value of property '${p}' is invalid. Should be a location`,
           );
         }
         break;
