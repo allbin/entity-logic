@@ -75,13 +75,17 @@ const validateSchema = (schema: EntitySchema): void => {
 
   schema.properties.forEach((prop) => {
     if (!prop.key || !/^meta\.|^inventory\.|^derived\./.test(prop.key)) {
-      throw new Error(`Schema prop has no/invalid key`);
+      throw new Error(`Schema prop has invalid key: ${prop.key}`);
     }
     if (!prop.type) {
-      throw new Error(`Schema prop has no/invalid type`);
+      throw new Error(
+        `Schema prop ${prop.key} has no/invalid type: ${prop.type as string}`,
+      );
     }
     if (!prop.name) {
-      throw new Error(`Schema prop has no/invalid name`);
+      throw new Error(
+        `Schema prop ${prop.key} has no/invalid name: ${prop.name}`,
+      );
     }
 
     if (
@@ -429,22 +433,23 @@ const validatePropertiesModifiable = (
   prev_properties: Record<string, unknown>,
   properties: Record<string, unknown>,
 ): void => {
-  Object.keys(properties).forEach((p) => {
-    const schema_prop = schemaPropsByKey[p];
+  Object.keys(schemaPropsByKey)
+    .filter((p) => !schemaPropsByKey[p].modifiable)
+    .forEach((p) => {
+      const schema_prop = schemaPropsByKey[p];
+      if (!schema_prop) {
+        throw new Error(`Unknown property '${p}'`);
+      }
 
-    if (!schema_prop) {
-      throw new Error(`Unknown property '${p}'`);
-    }
+      const prev_val = prev_properties[p];
+      const prop_val = properties[p];
 
-    const prev_val = prev_properties[p];
-    const prop_val = properties[p];
-
-    if (!schema_prop.modifiable && prev_val !== prop_val) {
-      throw new Error(
-        `Properties include modification to readonly property ${p}`,
-      );
-    }
-  });
+      if (prev_val !== prop_val) {
+        throw new Error(
+          `Properties include modification to readonly property ${p}`,
+        );
+      }
+    });
 };
 
 const serializeFilterCondition = (
