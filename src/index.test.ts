@@ -1358,6 +1358,20 @@ describe('validation', () => {
     ).toThrow();
   });
 
+  it('currently validates modifiable single properties (neg, undefined)', () => {
+    const prev_props = {
+      'inventory.10': 'test',
+    };
+    const props = {
+      'inventory.10': undefined,
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).toThrow();
+  });
+
   it('correctly validates modifiable array properties (pos)', () => {
     const prev_props = {
       'inventory.11': ['test', 'test2'],
