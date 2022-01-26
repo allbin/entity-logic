@@ -441,10 +441,47 @@ const validatePropertiesModifiable = (
         throw new Error(`Unknown property '${p}'`);
       }
 
+      let invalid = false;
       const prev_val = prev_properties[p];
       const prop_val = properties[p];
 
-      if (prev_val !== prop_val) {
+      switch (schema_prop.type) {
+        case 'array:number':
+        case 'array:string': {
+          const prev_is_array = Array.isArray(prev_val);
+          const prop_is_array = Array.isArray(prop_val);
+          if (prev_is_array !== prop_is_array) {
+            invalid = true;
+          }
+          if (!!prev_val !== !!prop_val) {
+            invalid = true;
+          }
+          if (Array.isArray(prev_val) && Array.isArray(prop_val)) {
+            if (prev_val.length !== prop_val.length) {
+              invalid = true;
+            }
+            for (let i = 0; i < prev_val.length; i++) {
+              if (prev_val[i] !== prop_val[i]) {
+                invalid = true;
+              }
+            }
+          }
+          break;
+        }
+        case 'boolean':
+        case 'number':
+        case 'string':
+        case 'date':
+        case 'photo':
+        case 'location': {
+          if (prev_val !== prop_val) {
+            invalid = true;
+          }
+          break;
+        }
+      }
+
+      if (invalid) {
         throw new Error(
           `Properties include modification to readonly property ${p}`,
         );

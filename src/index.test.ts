@@ -77,6 +77,16 @@ const schema: EntitySchema = {
       name: 'arraystring',
       modifiable: true,
     },
+    {
+      key: 'inventory.10',
+      type: 'string',
+      name: 'string-readonly',
+    },
+    {
+      key: 'inventory.11',
+      type: 'array:string',
+      name: 'arraystring-readonly',
+    },
   ],
 };
 
@@ -1320,7 +1330,7 @@ describe('validation', () => {
     ).toThrow();
   });
 
-  it('correctly validates modifiable properties', () => {
+  it('correctly validates modifiable single properties (pos)', () => {
     const prev_props = {
       'inventory.3': 'something',
     };
@@ -1332,5 +1342,45 @@ describe('validation', () => {
     expect(() =>
       logic.validatePropertiesModifiable(prev_props, props),
     ).not.toThrow();
+  });
+
+  it('correctly validates modifiable single properties (neg)', () => {
+    const prev_props = {
+      'inventory.10': 'test',
+    };
+    const props = {
+      'inventory.10': 'test2',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).toThrow();
+  });
+
+  it('correctly validates modifiable array properties (pos)', () => {
+    const prev_props = {
+      'inventory.11': ['test', 'test2'],
+    };
+    const props = {
+      'inventory.11': ['test', 'test2'],
+    };
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).not.toThrow();
+  });
+
+  it('correctly validates modifiable array properties (neg)', () => {
+    const prev_props = {
+      'inventory.11': ['test', 'test2'],
+    };
+    const props = {
+      'inventory.11': ['test2', 'test'],
+    };
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props),
+    ).toThrow();
   });
 });
