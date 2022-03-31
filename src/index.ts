@@ -11,27 +11,6 @@ import {
 
 import operators, { Operator } from './operators';
 
-interface EntityLogic {
-  execute: <T>(entities: Entity<T>[], filter: Filter) => Entity<T>[];
-  validateCondition: (condtion: FilterCondition) => Operator;
-  validateFilter: (filter: Filter) => Operator[];
-  validateProperties: (properties: Record<string, unknown>) => void;
-  validatePropertiesModifiable: (
-    prev_properties: Record<string, unknown>,
-    properties: Record<string, unknown>,
-  ) => void;
-
-  serializeFilterCondition: (
-    condition: FilterCondition,
-  ) => SerializedFilterCondition;
-  unserializeFilterCondition: (
-    condition: SerializedFilterCondition,
-  ) => FilterCondition;
-
-  serializeFilter: (filter: Filter) => SerializedFilter;
-  unserializeFilter: (filter: SerializedFilter) => Filter;
-}
-
 const executeCondition = <T>(
   schemaPropsByKey: EntitySchemaPropsByKey,
   entities: Entity<T>[],
@@ -53,6 +32,44 @@ const executeFilter = <T>(
     (entities, condition) =>
       executeCondition<T>(schemaPropsByKey, entities, condition),
     entities,
+  );
+};
+
+interface SeparatedResults<T> {
+  matched: Entity<T>[];
+  unmatched: Entity<T>[];
+}
+
+const executeFilterWithSeparatedResults = <T>(
+  schemaPropsByKey: EntitySchemaPropsByKey,
+  entities: Entity<T>[],
+  conditions: Filter,
+): SeparatedResults<T> => {
+  conditions.forEach((condition) =>
+    validateFilterCondition(schemaPropsByKey, condition),
+  );
+
+  return entities.reduce<SeparatedResults<T>>(
+    (results, entity) => {
+      if (
+        conditions.some((condition) => {
+          const op = operators[condition.type]?.[condition.operator];
+          return !op.func(condition.field, condition.value)(
+            entity,
+            entity.properties[condition.field],
+          );
+        })
+      ) {
+        results.unmatched.push(entity);
+      } else {
+        results.matched.push(entity);
+      }
+      return results;
+    },
+    {
+      matched: [],
+      unmatched: [],
+    },
   );
 };
 
@@ -524,6 +541,31 @@ const unserializeFilterCondition = (
   return condition as FilterCondition;
 };
 
+interface EntityLogic {
+  execute: <T>(entities: Entity<T>[], filter: Filter) => Entity<T>[];
+  executeWithSeparatedResults: <T>(
+    entities: Entity<T>[],
+    filter: Filter,
+  ) => SeparatedResults<T>;
+  validateCondition: (condtion: FilterCondition) => Operator;
+  validateFilter: (filter: Filter) => Operator[];
+  validateProperties: (properties: Record<string, unknown>) => void;
+  validatePropertiesModifiable: (
+    prev_properties: Record<string, unknown>,
+    properties: Record<string, unknown>,
+  ) => void;
+
+  serializeFilterCondition: (
+    condition: FilterCondition,
+  ) => SerializedFilterCondition;
+  unserializeFilterCondition: (
+    condition: SerializedFilterCondition,
+  ) => FilterCondition;
+
+  serializeFilter: (filter: Filter) => SerializedFilter;
+  unserializeFilter: (filter: SerializedFilter) => Filter;
+}
+
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
   validateSchema(schema);
   const propsByKey = schema.properties.reduce<EntitySchemaPropsByKey>(
@@ -536,6 +578,8 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
 
   return {
     execute: (entities, filter) => executeFilter(propsByKey, entities, filter),
+    executeWithSeparatedResults: (entities, filter) =>
+      executeFilterWithSeparatedResults(propsByKey, entities, filter),
     validateCondition: (condition: FilterCondition): Operator =>
       validateFilterCondition(propsByKey, condition),
     validateFilter: (filter: Filter): Operator[] =>

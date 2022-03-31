@@ -216,6 +216,40 @@ const entities: Entity[] = [
 
 const entityLogic = EntityLogic(schema);
 
+describe('executeSeparated', () => {
+  it('correctly executes a filter and separates the results', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.1',
+      type: 'boolean',
+      operator: 'known',
+    };
+
+    const results = entityLogic.executeWithSeparatedResults(entities, [
+      condition,
+    ]);
+    expect(results.matched).toMatchObject([
+      booleanFalseEntity,
+      booleanTrueEntity,
+    ]);
+    expect(results.unmatched).toMatchObject([
+      undefinedEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      date5MinAgoEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+      locationEntity,
+    ]);
+  });
+});
+
 describe('boolean operators', () => {
   it('correctly executes boolean.known conditions', () => {
     const condition: FilterCondition = {
