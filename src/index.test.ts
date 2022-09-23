@@ -1364,6 +1364,20 @@ describe('validation', () => {
     ).toThrow();
   });
 
+  it('rejects unmodifiable properties altogether, in strict mode', () => {
+    const prev_props = {
+      'meta.id': 'something',
+    };
+    const props = {
+      'meta.id': 'something',
+    };
+
+    const logic = EntityLogic(schema);
+    expect(() =>
+      logic.validatePropertiesModifiable(prev_props, props, { strict: true }),
+    ).toThrow();
+  });
+
   it('correctly validates modifiable single properties (pos)', () => {
     const prev_props = {
       'inventory.3': 'something',

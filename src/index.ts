@@ -449,6 +449,7 @@ const validatePropertiesModifiable = (
   schemaPropsByKey: EntitySchemaPropsByKey,
   prev_properties: Record<string, unknown>,
   properties: Record<string, unknown>,
+  options?: ValidatePropertiesModifiableOptions,
 ): void => {
   Object.keys(schemaPropsByKey)
     .filter((p) => !schemaPropsByKey[p].modifiable)
@@ -456,6 +457,15 @@ const validatePropertiesModifiable = (
       const schema_prop = schemaPropsByKey[p];
       if (!schema_prop) {
         throw new Error(`Unknown property '${p}'`);
+      }
+
+      if (
+        options?.strict &&
+        Object.prototype.hasOwnProperty.call(properties, p)
+      ) {
+        throw new Error(
+          `Property '${p}' is not modifiable and must not be included in updates`,
+        );
       }
 
       let invalid = false;
@@ -541,6 +551,10 @@ const unserializeFilterCondition = (
   return condition as FilterCondition;
 };
 
+interface ValidatePropertiesModifiableOptions {
+  strict?: boolean;
+}
+
 interface EntityLogic {
   execute: <T>(entities: Entity<T>[], filter: Filter) => Entity<T>[];
   executeWithSeparatedResults: <T>(
@@ -553,6 +567,7 @@ interface EntityLogic {
   validatePropertiesModifiable: (
     prev_properties: Record<string, unknown>,
     properties: Record<string, unknown>,
+    options?: ValidatePropertiesModifiableOptions,
   ) => void;
 
   serializeFilterCondition: (
@@ -589,7 +604,14 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
     validatePropertiesModifiable: (
       prev_properties: Record<string, unknown>,
       properties: Record<string, unknown>,
-    ) => validatePropertiesModifiable(propsByKey, prev_properties, properties),
+      options?: ValidatePropertiesModifiableOptions,
+    ) =>
+      validatePropertiesModifiable(
+        propsByKey,
+        prev_properties,
+        properties,
+        options,
+      ),
 
     serializeFilterCondition: (condition) =>
       serializeFilterCondition(condition),
