@@ -459,6 +459,8 @@ const validatePropertiesModifiable = (
         throw new Error(`Unknown property '${p}'`);
       }
 
+      /* reenable later when this makes sense */
+      /*
       if (
         options?.strict &&
         Object.prototype.hasOwnProperty.call(properties, p)
@@ -467,6 +469,7 @@ const validatePropertiesModifiable = (
           `Property '${p}' is not modifiable and must not be included in updates`,
         );
       }
+      */
 
       let invalid = false;
       const prev_val = prev_properties[p];
