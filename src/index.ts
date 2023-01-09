@@ -556,6 +556,7 @@ interface ValidatePropertiesModifiableOptions {
 }
 
 interface EntityLogic {
+  matches: <T>(entity: Entity<T>, filter: Filter) => boolean;
   execute: <T>(entities: Entity<T>[], filter: Filter) => Entity<T>[];
   executeWithSeparatedResults: <T>(
     entities: Entity<T>[],
@@ -592,6 +593,13 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
   );
 
   return {
+    matches: (entity, filter: Filter) =>
+      filter.every((condition) =>
+        validateFilterCondition(propsByKey, condition).func(
+          condition.field,
+          condition.value,
+        )(entity, entity.properties[condition.field]),
+      ),
     execute: (entities, filter) => executeFilter(propsByKey, entities, filter),
     executeWithSeparatedResults: (entities, filter) =>
       executeFilterWithSeparatedResults(propsByKey, entities, filter),

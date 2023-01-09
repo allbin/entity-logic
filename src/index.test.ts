@@ -1,5 +1,4 @@
 import {
-  Entity,
   EntityLogic,
   EntitySchema,
   FilterCondition,
@@ -7,214 +6,27 @@ import {
 } from './index';
 
 import { DateTime } from 'luxon';
-
-const schema: EntitySchema = {
-  groups: [],
-  properties: [
-    {
-      key: 'meta.id',
-      type: 'string',
-      name: 'ID',
-    },
-    {
-      key: 'meta.location',
-      type: 'location',
-      name: 'Koordinat',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.1',
-      type: 'boolean',
-      name: 'boolean',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.2',
-      type: 'number',
-      name: 'number',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.3',
-      type: 'string',
-      name: 'string',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.4',
-      type: 'date',
-      name: 'date',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.5',
-      type: 'date',
-      name: 'datestring',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.6',
-      type: 'enum',
-      name: 'enum',
-      alternatives: ['alternative1', 'alternative2'],
-      modifiable: true,
-    },
-    {
-      key: 'inventory.7',
-      type: 'photo',
-      name: 'photo',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.8',
-      type: 'array:number',
-      name: 'arraynumber',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.9',
-      type: 'array:string',
-      name: 'arraystring',
-      modifiable: true,
-    },
-    {
-      key: 'inventory.10',
-      type: 'string',
-      name: 'string-readonly',
-    },
-    {
-      key: 'inventory.11',
-      type: 'array:string',
-      name: 'arraystring-readonly',
-    },
-  ],
-};
-
-const undefinedEntity = {
-  properties: {
-    'meta.id': 'undefined',
-  },
-};
-const booleanTrueEntity = {
-  properties: {
-    'meta.id': 'boolean_id_true',
-    'inventory.1': true,
-  },
-};
-const booleanFalseEntity = {
-  properties: {
-    'meta.id': 'boolean_id_false',
-    'inventory.1': false,
-  },
-};
-
-const numberOneEntity = {
-  properties: {
-    'meta.id': 'number_id_1',
-    'inventory.2': 1,
-  },
-};
-const numberZeroEntity = {
-  properties: {
-    'meta.id': 'number_id_0',
-    'inventory.2': 0,
-  },
-};
-const stringWithLengthEntity = {
-  properties: {
-    'meta.id': 'string_id_len',
-    'inventory.3': 'string',
-  },
-};
-
-const stringWithNoLengthEntity = {
-  properties: {
-    'meta.id': 'string_id_nolen',
-    'inventory.3': '',
-  },
-};
-const dateEpochEntity = {
-  properties: {
-    'meta.id': 'date_epoch_utc',
-    'inventory.4': DateTime.utc(1970, 1, 1, 0, 0, 0, 0),
-  },
-};
-const date5MinAgoEntity = {
-  properties: {
-    'meta.id': 'date_5_min_ago',
-    'inventory.4': DateTime.utc().minus({ minutes: 5 }),
-  },
-};
-
-const enumEntity = {
-  properties: {
-    'meta.id': 'enum_id',
-    'inventory.6': 'alternative1',
-  },
-};
-
-const photoEntity = {
-  properties: {
-    'meta.id': 'photo_id',
-    'inventory.7': 'https://photo-url',
-  },
-};
-
-const arrayEvenNumbersEntity = {
-  properties: {
-    'meta.id': 'array_number_id',
-    'inventory.8': [0, 2, 4],
-  },
-};
-
-const arrayOddNumbersEntity = {
-  properties: {
-    'meta.id': 'array_number_id',
-    'inventory.8': [1, 3, 5],
-  },
-};
-
-const arrayStringEntityFirst = {
-  properties: {
-    'meta.id': 'array_string_id',
-    'inventory.9': ['string1', 'string2', 'string3'],
-  },
-};
-
-const arrayStringEntitySecond = {
-  properties: {
-    'meta.id': 'array_string_id',
-    'inventory.9': ['string4', 'string5', 'string6'],
-  },
-};
-
-const locationEntity = {
-  properties: {
-    'meta.id': 'location_id',
-    'meta.location': [15.6, 56.2],
-  },
-};
-
-const entities: Entity[] = [
-  undefinedEntity,
-  booleanFalseEntity,
-  booleanTrueEntity,
-  numberOneEntity,
-  numberZeroEntity,
-  stringWithLengthEntity,
-  stringWithNoLengthEntity,
-  dateEpochEntity,
-  date5MinAgoEntity,
-  enumEntity,
-  photoEntity,
+import {
   arrayEvenNumbersEntity,
   arrayOddNumbersEntity,
   arrayStringEntityFirst,
   arrayStringEntitySecond,
+  booleanFalseEntity,
+  booleanTrueEntity,
+  date5MinAgoEntity,
+  dateEpochEntity,
+  entities,
+  entityLogic,
+  enumEntity,
   locationEntity,
-];
-
-const entityLogic = EntityLogic(schema);
+  numberOneEntity,
+  numberZeroEntity,
+  photoEntity,
+  schema,
+  stringWithLengthEntity,
+  stringWithNoLengthEntity,
+  undefinedEntity,
+} from './testdata';
 
 describe('executeSeparated', () => {
   it('correctly executes a filter and separates the results', () => {
