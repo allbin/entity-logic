@@ -1,6 +1,6 @@
 {
   "name": "@allbin/entity-logic",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "description": "Logic solver for mobilix filters",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,7 +19,7 @@
   "license": "ISC",
   "devDependencies": {
     "@allbin/eslint-config": "0.0.11",
-    "@babel/core": "^7.15.5",
+    "@babel/core": "^7.20.12",
     "@babel/preset-env": "^7.15.6",
     "@babel/preset-typescript": "^7.15.0",
     "@types/jest": "^27.0.2",
