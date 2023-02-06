@@ -476,6 +476,7 @@ const validatePropertiesModifiable = (
       const prop_val = properties[p];
 
       switch (schema_prop.type) {
+        case 'location':
         case 'array:number':
         case 'array:string': {
           const prev_is_array = Array.isArray(prev_val);
@@ -502,8 +503,7 @@ const validatePropertiesModifiable = (
         case 'number':
         case 'string':
         case 'date':
-        case 'photo':
-        case 'location': {
+        case 'photo': {
           if (prev_val !== prop_val) {
             invalid = true;
           }
