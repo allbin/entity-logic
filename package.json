@@ -1,7 +1,6 @@
 {
   "name": "@allbin/entity-logic",
-  "version": "0.9.0",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "description": "Logic solver for mobilix filters",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
