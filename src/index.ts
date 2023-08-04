@@ -208,7 +208,10 @@ export const validateFilterCondition = (
       case 'gte':
       case 'lt':
       case 'lte':
-        if (typeof condition.value !== 'number') {
+        if (
+          typeof condition.value !== 'number' ||
+          Number.isNaN(condition.value)
+        ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
           );
@@ -220,7 +223,7 @@ export const validateFilterCondition = (
       case 'any_of':
         if (
           !Array.isArray(condition.value) ||
-          condition.value.some((v) => typeof v !== 'number')
+          condition.value.some((v) => typeof v !== 'number' || Number.isNaN(v))
         ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
@@ -310,7 +313,7 @@ export const validateFilterCondition = (
       case 'all_of':
         if (
           !Array.isArray(condition.value) ||
-          condition.value.some((v) => typeof v !== 'number')
+          condition.value.some((v) => typeof v !== 'number' || Number.isNaN(v))
         ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
@@ -370,7 +373,7 @@ const validateProperties = (
         break;
       }
       case 'number': {
-        if (typeof prop_value !== 'number') {
+        if (typeof prop_value !== 'number' || Number.isNaN(prop_value)) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be a number`,
           );
@@ -418,7 +421,7 @@ const validateProperties = (
       case 'array:number': {
         if (
           !Array.isArray(prop_value) ||
-          prop_value.some((v) => typeof v !== 'number')
+          prop_value.some((v) => typeof v !== 'number' || Number.isNaN(v))
         ) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be an array of numbers`,
@@ -441,7 +444,7 @@ const validateProperties = (
         if (
           !Array.isArray(prop_value) ||
           prop_value.length < 2 ||
-          prop_value.some((v) => typeof v !== 'number')
+          prop_value.some((v) => typeof v !== 'number' || Number.isNaN(v))
         ) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be a location`,
