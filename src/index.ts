@@ -163,7 +163,7 @@ const validateSchema = (schema: EntitySchema): void => {
  * Returns an `Operator` for the `FilterCondition`.
  * If the `FilterCondition` is invalid, an Error is thrown.
  */
-export const validateFilterCondition = (
+const validateFilterCondition = (
   schemaPropsByKey: EntitySchemaPropsByKey,
   condition: FilterCondition,
 ): Operator => {
@@ -345,7 +345,7 @@ export const validateFilterCondition = (
  * Returns a list consisting of one `Operator` for each filter condition in the filter.
  * Throws an Error if any `FilterCondition` is invalid.
  */
-export const validateFilter = (
+const validateFilter = (
   schemaPropsByKey: EntitySchemaPropsByKey,
   filter: Filter,
 ): Operator[] => {
@@ -565,6 +565,61 @@ const unserializeFilterCondition = (
   return condition as FilterCondition;
 };
 
+const isFilterConditionEqual = (
+  a_unserialized: FilterCondition,
+  b_unserialized: FilterCondition,
+): boolean => {
+  const a = serializeFilterCondition(a_unserialized);
+  const b = serializeFilterCondition(b_unserialized);
+
+  if (a.type !== b.type) {
+    return false;
+  }
+
+  if (a.field !== b.field) {
+    return false;
+  }
+
+  if (a.operator !== b.operator) {
+    return false;
+  }
+
+  if (['array:number', 'array:string', 'location'].includes(a.type)) {
+    const a_arr = a.value as Array<unknown>;
+    const b_arr = a.value as Array<unknown>;
+
+    if (a_arr.length !== b_arr.length) {
+      return false;
+    }
+
+    for (let i = 0; i < a_arr.length; i++) {
+      if (a_arr[i] !== b_arr[i]) {
+        return false;
+      }
+    }
+  } else {
+    if (a.value !== b.value) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const isFilterEqual = (a: Filter, b: Filter): boolean => {
+  if (a.length !== b.length) {
+    return false;
+  }
+
+  for (let i = 0; i < a.length; i++) {
+    if (!isFilterConditionEqual(a[i], b[i])) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
 interface ValidatePropertiesModifiableOptions {
   strict?: boolean;
 }
@@ -594,6 +649,9 @@ interface EntityLogic {
 
   serializeFilter: (filter: Filter) => SerializedFilter;
   unserializeFilter: (filter: SerializedFilter) => Filter;
+
+  isFilterConditionEqual: (a: FilterCondition, b: FilterCondition) => boolean;
+  isFilterEqual: (a: Filter, b: Filter) => boolean;
 }
 
 const EntityLogic = (schema: EntitySchema): EntityLogic => {
@@ -643,6 +701,8 @@ const EntityLogic = (schema: EntitySchema): EntityLogic => {
       filter.map((fc) => serializeFilterCondition(fc)),
     unserializeFilter: (filter) =>
       filter.map((fc) => unserializeFilterCondition(fc)),
+    isFilterConditionEqual: (a, b) => isFilterConditionEqual(a, b),
+    isFilterEqual: (a, b) => isFilterEqual(a, b),
   };
 };
 
