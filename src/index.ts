@@ -159,7 +159,11 @@ const validateSchema = (schema: EntitySchema): void => {
   });
 };
 
-const validateFilterCondition = (
+/**
+ * Returns an `Operator` for the `FilterCondition`.
+ * If the `FilterCondition` is invalid, an Error is thrown.
+ */
+export const validateFilterCondition = (
   schemaPropsByKey: EntitySchemaPropsByKey,
   condition: FilterCondition,
 ): Operator => {
@@ -334,7 +338,11 @@ const validateFilterCondition = (
   return op;
 };
 
-const validateFilter = (
+/**
+ * Returns a list consisting of one `Operator` for each filter condition in the filter.
+ * Throws an Error if any `FilterCondition` is invalid.
+ */
+export const validateFilter = (
   schemaPropsByKey: EntitySchemaPropsByKey,
   filter: Filter,
 ): Operator[] => {
