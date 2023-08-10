@@ -159,12 +159,18 @@ const operators: OperatorFunctions = {
     eq: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        typeof prop_val === 'string' && prop_val === val,
+        typeof prop_val === 'string' &&
+        typeof val === 'string' &&
+        prop_val.toLowerCase() === val?.toLowerCase(),
     },
     neq: {
       params: ['string'],
       func: (field, val) => (entity, prop_val) =>
-        !(typeof prop_val === 'string' && prop_val === val),
+        !(
+          typeof prop_val === 'string' &&
+          typeof val === 'string' &&
+          prop_val.toLowerCase() === val?.toLowerCase()
+        ),
     },
     matches: {
       params: ['string'],
@@ -394,7 +400,11 @@ const operators: OperatorFunctions = {
         !(
           Array.isArray(prop_vals) &&
           Array.isArray(vals) &&
-          vals.some((v) => prop_vals.includes(v))
+          vals
+            .map((v) => (v as string).toLowerCase())
+            .some((v) =>
+              prop_vals.map((pv) => (pv as string).toLowerCase()).includes(v),
+            )
         ),
     },
     any_of: {
@@ -402,14 +412,22 @@ const operators: OperatorFunctions = {
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
-        vals.some((v) => prop_vals.includes(v)),
+        vals
+          .map((v) => (v as string).toLowerCase())
+          .some((v) =>
+            prop_vals.map((pv) => (pv as string).toLowerCase()).includes(v),
+          ),
     },
     all_of: {
       params: ['array:string'],
       func: (field, vals) => (entity, prop_vals) =>
         Array.isArray(prop_vals) &&
         Array.isArray(vals) &&
-        vals.every((v) => prop_vals.includes(v)),
+        vals
+          .map((v) => (v as string).toLowerCase())
+          .every((v) =>
+            prop_vals.map((pv) => (pv as string).toLowerCase()).includes(v),
+          ),
     },
   },
   location: {
