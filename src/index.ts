@@ -221,7 +221,7 @@ const validateFilterCondition = (
       case 'not_between':
         if (
           !Array.isArray(condition.value) ||
-          condition.value.length === 2 ||
+          condition.value.length !== 2 ||
           condition.value.some((v) => typeof v !== 'number' || Number.isNaN(v))
         ) {
           throw new Error(
@@ -298,7 +298,7 @@ const validateFilterCondition = (
     switch (condition.operator) {
       case 'before':
       case 'after':
-        if (!DateTime.isDateTime(condition.value)) {
+        if (!DateTime.isDateTime(condition.value) || !condition.value.isValid) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
           );
@@ -308,8 +308,8 @@ const validateFilterCondition = (
       case 'not_between':
         if (
           !Array.isArray(condition.value) ||
-          condition.value.length === 2 ||
-          condition.value.some((v) => !DateTime.isDateTime(v))
+          condition.value.length !== 2 ||
+          condition.value.some((v) => !DateTime.isDateTime(v) || !v.isValid)
         ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
