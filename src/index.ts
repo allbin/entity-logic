@@ -392,7 +392,7 @@ const validateProperties = (
         break;
       }
       case 'string': {
-        if (typeof prop_value !== 'string') {
+        if (typeof prop_value !== 'string' || prop_value.trim().length === 0) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be a string`,
           );
@@ -400,7 +400,10 @@ const validateProperties = (
         break;
       }
       case 'enum': {
-        if (typeof prop_value !== 'string') {
+        if (
+          typeof prop_value !== 'string' ||
+          !schema_prop.alternatives?.includes(prop_value)
+        ) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be a string`,
           );
@@ -422,7 +425,7 @@ const validateProperties = (
         break;
       }
       case 'photo': {
-        if (typeof prop_value !== 'string') {
+        if (typeof prop_value !== 'string' || prop_value.trim().length === 0) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be a string`,
           );
@@ -443,7 +446,7 @@ const validateProperties = (
       case 'array:string': {
         if (
           !Array.isArray(prop_value) ||
-          prop_value.some((v) => typeof v !== 'string')
+          prop_value.some((v) => typeof v !== 'string' || v.trim().length === 0)
         ) {
           throw new Error(
             `Value of property '${p}' is invalid. Should be an array of strings`,
