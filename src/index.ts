@@ -599,6 +599,10 @@ const isFilterConditionEqual = (
   }
 
   if (['array:number', 'array:string', 'location'].includes(a.type)) {
+    if (!Array.isArray(a.value) || !Array.isArray(b.value)) {
+      return a.value === b.value;
+    }
+
     const a_arr = a.value as Array<unknown>;
     const b_arr = a.value as Array<unknown>;
 
@@ -611,13 +615,10 @@ const isFilterConditionEqual = (
         return false;
       }
     }
-  } else {
-    if (a.value !== b.value) {
-      return false;
-    }
+    return true;
   }
 
-  return true;
+  return a.value === b.value;
 };
 
 const isFilterEqual = (a: Filter, b: Filter): boolean => {

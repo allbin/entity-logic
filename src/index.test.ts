@@ -1259,3 +1259,38 @@ describe('validation', () => {
     ).toThrow();
   });
 });
+
+describe('isFilterConditionEqual', () => {
+  it('correctly compares location filter conditions', () => {
+    const logic = EntityLogic(schema);
+
+    const c1: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'known',
+    };
+
+    const c2: FilterCondition = {
+      field: 'meta.location2',
+      type: 'location',
+      operator: 'known',
+    };
+
+    const c3: FilterCondition = {
+      field: 'meta.location',
+      type: 'string',
+      operator: 'known',
+    };
+
+    const c4: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'unknown',
+    };
+
+    expect(logic.isFilterConditionEqual(c1, c1)).toEqual(true);
+    expect(logic.isFilterConditionEqual(c1, c2)).toEqual(false);
+    expect(logic.isFilterConditionEqual(c1, c3)).toEqual(false);
+    expect(logic.isFilterConditionEqual(c1, c4)).toEqual(false);
+  });
+});
