@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 
 import { Entity, EntitySchemaPropType } from './types/schema';
 
@@ -322,6 +322,32 @@ const operators: OperatorFunctions = {
             prop_val >= from &&
             prop_val <= to
           ),
+    },
+    in_last: {
+      params: ['string'],
+      func: (field, val) => (entity, prop_val) => {
+        const duration =
+          typeof val === 'string' ? Duration.fromISO(val) : undefined;
+        return (
+          !!duration &&
+          duration.isValid &&
+          DateTime.isDateTime(prop_val) &&
+          prop_val >= DateTime.utc().minus(duration)
+        );
+      },
+    },
+    not_in_last: {
+      params: ['string'],
+      func: (field, val) => (entity, prop_val) => {
+        const duration =
+          typeof val === 'string' ? Duration.fromISO(val) : undefined;
+        return !(
+          !!duration &&
+          duration.isValid &&
+          DateTime.isDateTime(prop_val) &&
+          prop_val >= DateTime.utc().minus(duration)
+        );
+      },
     },
   },
   photo: {

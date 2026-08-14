@@ -1,4 +1,4 @@
-import { DateTime } from 'luxon';
+import { DateTime, Duration } from 'luxon';
 
 import { Entity, EntitySchema, EntitySchemaPropsByKey } from './types/schema';
 
@@ -310,6 +310,17 @@ const validateFilterCondition = (
           !Array.isArray(condition.value) ||
           condition.value.length !== 2 ||
           condition.value.some((v) => !DateTime.isDateTime(v) || !v.isValid)
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+      case 'in_last':
+      case 'not_in_last':
+        if (
+          typeof condition.value !== 'string' ||
+          !Duration.fromISO(condition.value).isValid
         ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,
