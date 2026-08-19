@@ -1,6 +1,6 @@
 {
   "name": "@allbin/entity-logic",
-  "version": "0.16.1",
+  "version": "0.17.0",
   "description": "Logic solver for mobilix filters",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -33,6 +33,9 @@
     "prettier": "^2.4.1",
     "ts-node": "^10.2.1",
     "typescript": "^4.4.3"
+  },
+  "overrides": {
+    "@types/babel__traverse": "7.20.2"
   },
   "dependencies": {
     "luxon": "^2.0.2"
