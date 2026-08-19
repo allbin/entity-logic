@@ -759,6 +759,46 @@ describe('date operators', () => {
       locationEntity,
     ]);
   });
+
+  it('correctly executes date.in_last', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.4',
+      type: 'date',
+      operator: 'in_last',
+      value: 'PT1H',
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([date5MinAgoEntity]);
+  });
+
+  it('correctly executes date.not_in_last', () => {
+    const condition: FilterCondition = {
+      field: 'inventory.4',
+      type: 'date',
+      operator: 'not_in_last',
+      value: 'PT1H',
+    };
+
+    const result = entityLogic.execute(entities, [condition]);
+    expect(result).toMatchObject([
+      undefinedEntity,
+      booleanFalseEntity,
+      booleanTrueEntity,
+      numberOneEntity,
+      numberZeroEntity,
+      stringWithLengthEntity,
+      stringWithNoLengthEntity,
+      dateEpochEntity,
+      enumEntity,
+      photoEntity,
+      arrayEvenNumbersEntity,
+      arrayOddNumbersEntity,
+      arrayStringEntityFirst,
+      arrayStringEntitySecond,
+      locationEntity,
+    ]);
+  });
 });
 
 describe('photo operators', () => {
@@ -1053,6 +1093,45 @@ describe('validation', () => {
       operator: 'any_of',
       value: ['alternative1'],
     };
+
+    expect(() => logic.validateFilter([condition])).toThrow();
+  });
+
+  it('correctly validates a valid date.in_last condition', () => {
+    const logic = EntityLogic(schema);
+
+    const condition: FilterCondition = {
+      field: 'inventory.4',
+      type: 'date',
+      operator: 'in_last',
+      value: 'P3M',
+    };
+
+    const result = logic.validateFilter([condition]);
+    expect(result).toBeTruthy();
+  });
+
+  it('rejects a date.in_last condition with an invalid duration', () => {
+    const logic = EntityLogic(schema);
+
+    const condition: FilterCondition = {
+      field: 'inventory.4',
+      type: 'date',
+      operator: 'in_last',
+      value: 'not-a-duration',
+    };
+
+    expect(() => logic.validateFilter([condition])).toThrow();
+  });
+
+  it('rejects a date.not_in_last condition without a value', () => {
+    const logic = EntityLogic(schema);
+
+    const condition = {
+      field: 'inventory.4',
+      type: 'date',
+      operator: 'not_in_last',
+    } as unknown as FilterCondition;
 
     expect(() => logic.validateFilter([condition])).toThrow();
   });

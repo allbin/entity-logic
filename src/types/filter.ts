@@ -21,7 +21,9 @@ export type FilterOperator =
   | 'between'
   | 'not_between'
   | 'before'
-  | 'after';
+  | 'after'
+  | 'in_last'
+  | 'not_in_last';
 
 export type FilterValue =
   | undefined
@@ -130,10 +132,19 @@ export interface FilterConditionDateTimeManyArgs extends FilterConditionBase {
   value: DateTime[];
 }
 
+export interface FilterConditionDateTimeDurationArg
+  extends FilterConditionBase {
+  type: 'date';
+  operator: 'in_last' | 'not_in_last';
+  /** ISO 8601 duration, e.g. "P3M" (3 months) or "P10D" (10 days) */
+  value: string;
+}
+
 export type FilterConditionDateTime =
   | FilterConditionDateTimeNoArgs
   | FilterConditionDateTimeSingleArg
-  | FilterConditionDateTimeManyArgs;
+  | FilterConditionDateTimeManyArgs
+  | FilterConditionDateTimeDurationArg;
 
 export interface FilterConditionSerializedDateTimeSingleArg
   extends FilterConditionBase {
@@ -152,7 +163,8 @@ export interface FilterConditionSerializedDateTimeManyArgs
 export type FilterConditionSerializedDateTime =
   | FilterConditionDateTimeNoArgs
   | FilterConditionSerializedDateTimeSingleArg
-  | FilterConditionSerializedDateTimeManyArgs;
+  | FilterConditionSerializedDateTimeManyArgs
+  | FilterConditionDateTimeDurationArg;
 
 export interface FilterConditionPhotoNoArg extends FilterConditionBase {
   type: 'photo';
