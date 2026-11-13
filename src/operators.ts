@@ -22,6 +22,46 @@ const escapeAndCompileRegex = (s: string): RegExp =>
     'i',
   );
 
+const isWithinPolygon = (
+  point: unknown,
+  polygon: Array<[number, number]>,
+): boolean => {
+  if (
+    !Array.isArray(point) ||
+    point.length !== 2 ||
+    point.some(
+      (coordinate) =>
+        typeof coordinate !== 'number' || Number.isNaN(coordinate),
+    )
+  ) {
+    return false;
+  }
+
+  const [x, y] = point as [number, number];
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+
+    if (
+      (x - xi) * (yj - yi) === (y - yi) * (xj - xi) &&
+      x >= Math.min(xi, xj) &&
+      x <= Math.max(xi, xj) &&
+      y >= Math.min(yi, yj) &&
+      y <= Math.max(yi, yj)
+    ) {
+      return true;
+    }
+
+    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+};
+
 const operators: OperatorFunctions = {
   boolean: {
     known: {
@@ -470,6 +510,16 @@ const operators: OperatorFunctions = {
         !Object.prototype.hasOwnProperty.call(entity.properties, field) ||
         entity.properties[field] === undefined ||
         entity.properties[field] === null,
+    },
+    within_polygon: {
+      params: ['location'],
+      func: (field, polygon) => (entity, prop_val) =>
+        isWithinPolygon(prop_val, polygon),
+    },
+    not_within_polygon: {
+      params: ['location'],
+      func: (field, polygon) => (entity, prop_val) =>
+        !isWithinPolygon(prop_val, polygon),
     },
   },
 };

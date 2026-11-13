@@ -23,7 +23,9 @@ export type FilterOperator =
   | 'before'
   | 'after'
   | 'in_last'
-  | 'not_in_last';
+  | 'not_in_last'
+  | 'within_polygon'
+  | 'not_within_polygon';
 
 export type FilterValue =
   | undefined
@@ -33,7 +35,8 @@ export type FilterValue =
   | DateTime
   | string[]
   | number[]
-  | DateTime[];
+  | DateTime[]
+  | Array<[number, number]>;
 
 interface FilterConditionBase {
   field: string;
@@ -206,7 +209,15 @@ export interface FilterConditionLocationNoArgs extends FilterConditionBase {
   operator: 'known' | 'unknown';
 }
 
-export type FilterConditionLocation = FilterConditionLocationNoArgs;
+export interface FilterConditionLocationPolygonArg extends FilterConditionBase {
+  type: 'location';
+  operator: 'within_polygon' | 'not_within_polygon';
+  value: Array<[number, number]>;
+}
+
+export type FilterConditionLocation =
+  | FilterConditionLocationNoArgs
+  | FilterConditionLocationPolygonArg;
 
 export type FilterConditionNumberArray =
   | FilterConditionNumberArrayNoArgs

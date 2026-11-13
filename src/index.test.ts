@@ -1030,6 +1030,13 @@ describe('array:string operators', () => {
 });
 
 describe('location operators', () => {
+  const polygon: Array<[number, number]> = [
+    [15, 56],
+    [16, 56],
+    [16, 57],
+    [15, 57],
+  ];
+
   it('correctly executes location.known conditions', () => {
     const condition: FilterCondition = {
       field: 'meta.location',
@@ -1066,6 +1073,135 @@ describe('location operators', () => {
       arrayStringEntityFirst,
       arrayStringEntitySecond,
     ]);
+  });
+
+  it('matches only the point inside a polygon', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.execute(entities, [condition])).toEqual([
+      locationEntity,
+    ]);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [17, 56.2] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.6] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+  });
+
+  it('uses the even-odd rule for a concave polygon', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+        [15.5, 56.5],
+        [15, 57],
+      ],
+    };
+
+    expect(entityLogic.matches(locationEntity, [condition])).toBe(true);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.5, 56.8] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+  });
+
+  it('treats closed and unclosed rings alike', () => {
+    const open: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+    const closed: FilterCondition = {
+      ...open,
+      value: [...polygon, polygon[0]],
+    };
+    const outside = { properties: { 'meta.location': [17, 56.2] } };
+
+    expect(entityLogic.matches(locationEntity, [closed])).toBe(
+      entityLogic.matches(locationEntity, [open]),
+    );
+    expect(entityLogic.matches(outside, [closed])).toBe(
+      entityLogic.matches(outside, [open]),
+    );
+  });
+
+  it('negates containment for missing and malformed locations', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'not_within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.matches(locationEntity, [condition])).toBe(false);
+    expect(entityLogic.matches(undefinedEntity, [condition])).toBe(true);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.6] } }, [
+        condition,
+      ]),
+    ).toBe(true);
+  });
+
+  it.each(['within_polygon', 'not_within_polygon'] as const)(
+    'rejects invalid %s polygons',
+    (operator) => {
+      const valid: FilterCondition = {
+        field: 'meta.location',
+        type: 'location',
+        operator,
+        value: polygon,
+      };
+      const invalidValues = [
+        polygon.slice(0, 2),
+        [
+          [15, 56],
+          [16, '56'],
+          [16, 57],
+        ],
+        [
+          [15, 56],
+          [16, NaN],
+          [16, 57],
+        ],
+      ];
+
+      expect(entityLogic.validateFilter([valid])).toHaveLength(1);
+      invalidValues.forEach((value) =>
+        expect(() =>
+          entityLogic.validateFilter([
+            { ...valid, value } as unknown as FilterCondition,
+          ]),
+        ).toThrow(`Invalid condition value for location:${operator}`),
+      );
+    },
+  );
+
+  it('passes polygon conditions through serialization unchanged', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.serializeFilterCondition(condition)).toBe(condition);
+    expect(entityLogic.unserializeFilterCondition(condition)).toBe(condition);
   });
 });
 
@@ -1340,6 +1476,48 @@ describe('validation', () => {
 });
 
 describe('isFilterConditionEqual', () => {
+  it('compares polygon coordinates in order', () => {
+    const logic = EntityLogic(schema);
+    const first: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+      ],
+    };
+    const equal: FilterCondition = {
+      ...first,
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+      ],
+    };
+    const different: FilterCondition = {
+      ...first,
+      value: [
+        [15, 56],
+        [16, 56],
+        [15, 57],
+      ],
+    };
+    const reordered: FilterCondition = {
+      ...first,
+      value: [
+        [16, 56],
+        [15, 56],
+        [16, 57],
+      ],
+    };
+
+    expect(logic.isFilterConditionEqual(first, equal)).toBe(true);
+    expect(logic.isFilterConditionEqual(first, different)).toBe(false);
+    expect(logic.isFilterConditionEqual(first, reordered)).toBe(false);
+  });
+
   it('correctly compares location filter conditions', () => {
     const logic = EntityLogic(schema);
 
