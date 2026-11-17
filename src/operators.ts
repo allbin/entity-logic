@@ -22,39 +22,63 @@ const escapeAndCompileRegex = (s: string): RegExp =>
     'i',
   );
 
+const isCoordinate = (coordinate: unknown): coordinate is number =>
+  typeof coordinate === 'number' && !Number.isNaN(coordinate);
+
+export const isCoordinatePair = (point: unknown): point is [number, number] =>
+  Array.isArray(point) &&
+  point.length === 2 &&
+  isCoordinate(point[0]) &&
+  isCoordinate(point[1]);
+
+// Distance in coordinate units (degrees for meta.location, ~0.1 mm) within
+// which a point counts as lying on a polygon edge. Exact float equality would
+// miss most edge points.
+const BOUNDARY_TOLERANCE = 1e-9;
+
+const isOnSegment = (
+  x: number,
+  y: number,
+  xi: number,
+  yi: number,
+  xj: number,
+  yj: number,
+): boolean => {
+  const dx = xj - xi;
+  const dy = yj - yi;
+  const cross = (x - xi) * dy - (y - yi) * dx;
+  const tolerance = BOUNDARY_TOLERANCE * Math.max(1, Math.hypot(dx, dy));
+
+  return (
+    Math.abs(cross) <= tolerance &&
+    x >= Math.min(xi, xj) - BOUNDARY_TOLERANCE &&
+    x <= Math.max(xi, xj) + BOUNDARY_TOLERANCE &&
+    y >= Math.min(yi, yj) - BOUNDARY_TOLERANCE &&
+    y <= Math.max(yi, yj) + BOUNDARY_TOLERANCE
+  );
+};
+
 const isWithinPolygon = (
   point: unknown,
   polygon: Array<[number, number]>,
 ): boolean => {
-  if (
-    !Array.isArray(point) ||
-    point.length !== 2 ||
-    point.some(
-      (coordinate) =>
-        typeof coordinate !== 'number' || Number.isNaN(coordinate),
-    )
-  ) {
+  if (!isCoordinatePair(point)) {
     return false;
   }
 
-  const [x, y] = point as [number, number];
+  const [x, y] = point;
   let inside = false;
 
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
     const [xi, yi] = polygon[i];
     const [xj, yj] = polygon[j];
 
-    if (
-      (x - xi) * (yj - yi) === (y - yi) * (xj - xi) &&
-      x >= Math.min(xi, xj) &&
-      x <= Math.max(xi, xj) &&
-      y >= Math.min(yi, yj) &&
-      y <= Math.max(yi, yj)
-    ) {
+    if (isOnSegment(x, y, xi, yi, xj, yj)) {
       return true;
     }
 
-    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+    // Divide before multiplying so extreme coordinates do not overflow.
+    if (yi > y !== yj > y && x < (xj - xi) * ((y - yi) / (yj - yi)) + xi) {
       inside = !inside;
     }
   }

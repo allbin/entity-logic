@@ -9,7 +9,7 @@ import {
   SerializedFilterCondition,
 } from './types/filter';
 
-import operators, { Operator } from './operators';
+import operators, { Operator, isCoordinatePair } from './operators';
 
 const executeCondition = <T>(
   schemaPropsByKey: EntitySchemaPropsByKey,
@@ -365,15 +365,11 @@ const validateFilterCondition = (
         if (
           !Array.isArray(condition.value) ||
           condition.value.length < 3 ||
-          condition.value.some(
-            (point) =>
-              !Array.isArray(point) ||
-              point.length !== 2 ||
-              point.some(
-                (coordinate) =>
-                  typeof coordinate !== 'number' || Number.isNaN(coordinate),
-              ),
-          )
+          // Index access instead of .some(): holes in a sparse array are
+          // skipped by .some() and would crash the operator later.
+          !Array.from(condition.value, (point) =>
+            isCoordinatePair(point),
+          ).every(Boolean)
         ) {
           throw new Error(
             `Invalid condition value for ${condition.type}:${condition.operator}`,

@@ -1,4 +1,5 @@
 import {
+  Entity,
   EntityLogic,
   EntitySchema,
   FilterCondition,
@@ -1120,6 +1121,61 @@ describe('location operators', () => {
     ).toBe(false);
   });
 
+  it('counts points on the boundary as within', () => {
+    const withinSlanted: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [0, 0.01],
+        [0.01, 0.06],
+        [0.02, 0],
+      ],
+    };
+    const withinSquare: FilterCondition = { ...withinSlanted, value: polygon };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    // Midpoint of a slanted edge: not representable by exact float equality.
+    expect(entityLogic.matches(at([0.005, 0.035]), [withinSlanted])).toBe(true);
+    // Vertex, horizontal edge and vertical edge of the square.
+    expect(entityLogic.matches(at([15, 56]), [withinSquare])).toBe(true);
+    expect(entityLogic.matches(at([15.5, 56]), [withinSquare])).toBe(true);
+    expect(entityLogic.matches(at([16, 56.5]), [withinSquare])).toBe(true);
+    // Just outside the square is still outside.
+    expect(entityLogic.matches(at([16.001, 56.5]), [withinSquare])).toBe(false);
+  });
+
+  it('handles degenerate and extreme polygons', () => {
+    const collinear: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [15.5, 56],
+        [16, 56],
+      ],
+    };
+    const huge: FilterCondition = {
+      ...collinear,
+      value: [
+        [0, 0],
+        [1e200, 1e200],
+        [0, 1e200],
+      ],
+    };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    expect(entityLogic.matches(at([15.25, 56]), [collinear])).toBe(true);
+    expect(entityLogic.matches(at([15.25, 56.1]), [collinear])).toBe(false);
+    expect(entityLogic.matches(at([6e199, 5e199]), [huge])).toBe(false);
+    expect(entityLogic.matches(at([4e199, 5e199]), [huge])).toBe(true);
+  });
+
   it('treats closed and unclosed rings alike', () => {
     const open: FilterCondition = {
       field: 'meta.location',
@@ -1169,6 +1225,8 @@ describe('location operators', () => {
       };
       const invalidValues = [
         polygon.slice(0, 2),
+        new Array(3),
+        [[15, 56], new Array(2), [16, 57]],
         [
           [15, 56],
           [16, '56'],
