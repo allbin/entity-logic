@@ -365,8 +365,8 @@ const validateFilterCondition = (
         if (
           !Array.isArray(condition.value) ||
           condition.value.length < 3 ||
-          // Index access instead of .some(): holes in a sparse array are
-          // skipped by .some() and would crash the operator later.
+          // Array.from turns holes in a sparse array into undefined; .some()
+          // would skip them and the operator would crash later.
           !Array.from(condition.value, (point) =>
             isCoordinatePair(point),
           ).every(Boolean)

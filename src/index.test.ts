@@ -1147,6 +1147,32 @@ describe('location operators', () => {
     expect(entityLogic.matches(at([16.001, 56.5]), [withinSquare])).toBe(false);
   });
 
+  it('keeps the boundary tolerance tight on short slanted edges', () => {
+    // Edge of about 15 m (1.41e-4 degrees), drawn by hand on a map.
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15.6, 56.2],
+        [15.6001, 56.2001],
+        [15.6002, 56.2],
+      ],
+    };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    // On the edge.
+    expect(entityLogic.matches(at([15.60005, 56.20005]), [condition])).toBe(
+      true,
+    );
+    // 1e-7 degrees (about 1 cm) outside the edge.
+    expect(
+      entityLogic.matches(at([15.60005 - 1e-7, 56.20005 + 1e-7]), [condition]),
+    ).toBe(false);
+  });
+
   it('handles degenerate and extreme polygons', () => {
     const collinear: FilterCondition = {
       field: 'meta.location',

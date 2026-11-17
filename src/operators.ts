@@ -47,7 +47,9 @@ const isOnSegment = (
   const dx = xj - xi;
   const dy = yj - yi;
   const cross = (x - xi) * dy - (y - yi) * dx;
-  const tolerance = BOUNDARY_TOLERANCE * Math.max(1, Math.hypot(dx, dy));
+  // cross equals distance-to-line times edge length, so scale the tolerance
+  // by the edge length to keep the distance bound constant.
+  const tolerance = BOUNDARY_TOLERANCE * Math.hypot(dx, dy);
 
   return (
     Math.abs(cross) <= tolerance &&
