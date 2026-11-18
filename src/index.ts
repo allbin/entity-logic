@@ -9,7 +9,7 @@ import {
   SerializedFilterCondition,
 } from './types/filter';
 
-import operators, { Operator } from './operators';
+import operators, { Operator, isCoordinatePair } from './operators';
 
 const executeCondition = <T>(
   schemaPropsByKey: EntitySchemaPropsByKey,
@@ -358,6 +358,25 @@ const validateFilterCondition = (
         }
         break;
     }
+  } else if (condition.type === 'location') {
+    switch (condition.operator) {
+      case 'within_polygon':
+      case 'not_within_polygon':
+        if (
+          !Array.isArray(condition.value) ||
+          condition.value.length < 3 ||
+          // Array.from turns holes in a sparse array into undefined; .some()
+          // would skip them and the operator would crash later.
+          !Array.from(condition.value, (point) =>
+            isCoordinatePair(point),
+          ).every(Boolean)
+        ) {
+          throw new Error(
+            `Invalid condition value for ${condition.type}:${condition.operator}`,
+          );
+        }
+        break;
+    }
   }
 
   return op;
@@ -615,13 +634,26 @@ const isFilterConditionEqual = (
     }
 
     const a_arr = a.value as Array<unknown>;
-    const b_arr = a.value as Array<unknown>;
+    const b_arr = b.value as Array<unknown>;
 
     if (a_arr.length !== b_arr.length) {
       return false;
     }
 
     for (let i = 0; i < a_arr.length; i++) {
+      const a_point = a_arr[i];
+      const b_point = b_arr[i];
+      if (a.type === 'location' && Array.isArray(a_point)) {
+        if (!Array.isArray(b_point) || a_point.length !== b_point.length) {
+          return false;
+        }
+        for (let j = 0; j < a_point.length; j++) {
+          if (a_point[j] !== b_point[j]) {
+            return false;
+          }
+        }
+        continue;
+      }
       if (a_arr[i] !== b_arr[i]) {
         return false;
       }

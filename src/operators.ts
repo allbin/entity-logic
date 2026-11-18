@@ -22,6 +22,72 @@ const escapeAndCompileRegex = (s: string): RegExp =>
     'i',
   );
 
+const isCoordinate = (coordinate: unknown): coordinate is number =>
+  typeof coordinate === 'number' && !Number.isNaN(coordinate);
+
+export const isCoordinatePair = (point: unknown): point is [number, number] =>
+  Array.isArray(point) &&
+  point.length === 2 &&
+  isCoordinate(point[0]) &&
+  isCoordinate(point[1]);
+
+// Distance in coordinate units (degrees for meta.location, ~0.1 mm) within
+// which a point counts as lying on a polygon edge. Exact float equality would
+// miss most edge points.
+const BOUNDARY_TOLERANCE = 1e-9;
+
+const isOnSegment = (
+  x: number,
+  y: number,
+  xi: number,
+  yi: number,
+  xj: number,
+  yj: number,
+): boolean => {
+  const dx = xj - xi;
+  const dy = yj - yi;
+  const cross = (x - xi) * dy - (y - yi) * dx;
+  // cross equals distance-to-line times edge length, so scale the tolerance
+  // by the edge length to keep the distance bound constant.
+  const tolerance = BOUNDARY_TOLERANCE * Math.hypot(dx, dy);
+
+  return (
+    Math.abs(cross) <= tolerance &&
+    x >= Math.min(xi, xj) - BOUNDARY_TOLERANCE &&
+    x <= Math.max(xi, xj) + BOUNDARY_TOLERANCE &&
+    y >= Math.min(yi, yj) - BOUNDARY_TOLERANCE &&
+    y <= Math.max(yi, yj) + BOUNDARY_TOLERANCE
+  );
+};
+
+const isWithinPolygon = (
+  point: unknown,
+  polygon: Array<[number, number]>,
+): boolean => {
+  if (!isCoordinatePair(point)) {
+    return false;
+  }
+
+  const [x, y] = point;
+  let inside = false;
+
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const [xi, yi] = polygon[i];
+    const [xj, yj] = polygon[j];
+
+    if (isOnSegment(x, y, xi, yi, xj, yj)) {
+      return true;
+    }
+
+    // Divide before multiplying so extreme coordinates do not overflow.
+    if (yi > y !== yj > y && x < (xj - xi) * ((y - yi) / (yj - yi)) + xi) {
+      inside = !inside;
+    }
+  }
+
+  return inside;
+};
+
 const operators: OperatorFunctions = {
   boolean: {
     known: {
@@ -470,6 +536,16 @@ const operators: OperatorFunctions = {
         !Object.prototype.hasOwnProperty.call(entity.properties, field) ||
         entity.properties[field] === undefined ||
         entity.properties[field] === null,
+    },
+    within_polygon: {
+      params: ['location'],
+      func: (field, polygon) => (entity, prop_val) =>
+        isWithinPolygon(prop_val, polygon),
+    },
+    not_within_polygon: {
+      params: ['location'],
+      func: (field, polygon) => (entity, prop_val) =>
+        !isWithinPolygon(prop_val, polygon),
     },
   },
 };

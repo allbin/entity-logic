@@ -1,4 +1,5 @@
 import {
+  Entity,
   EntityLogic,
   EntitySchema,
   FilterCondition,
@@ -1030,6 +1031,13 @@ describe('array:string operators', () => {
 });
 
 describe('location operators', () => {
+  const polygon: Array<[number, number]> = [
+    [15, 56],
+    [16, 56],
+    [16, 57],
+    [15, 57],
+  ];
+
   it('correctly executes location.known conditions', () => {
     const condition: FilterCondition = {
       field: 'meta.location',
@@ -1066,6 +1074,218 @@ describe('location operators', () => {
       arrayStringEntityFirst,
       arrayStringEntitySecond,
     ]);
+  });
+
+  it('matches only the point inside a polygon', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.execute(entities, [condition])).toEqual([
+      locationEntity,
+    ]);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [17, 56.2] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.6] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+  });
+
+  it('uses the even-odd rule for a concave polygon', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+        [15.5, 56.5],
+        [15, 57],
+      ],
+    };
+
+    expect(entityLogic.matches(locationEntity, [condition])).toBe(true);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.5, 56.8] } }, [
+        condition,
+      ]),
+    ).toBe(false);
+  });
+
+  it('counts points on the boundary as within', () => {
+    const withinSlanted: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [0, 0.01],
+        [0.01, 0.06],
+        [0.02, 0],
+      ],
+    };
+    const withinSquare: FilterCondition = { ...withinSlanted, value: polygon };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    // Midpoint of a slanted edge: not representable by exact float equality.
+    expect(entityLogic.matches(at([0.005, 0.035]), [withinSlanted])).toBe(true);
+    // Vertex, horizontal edge and vertical edge of the square.
+    expect(entityLogic.matches(at([15, 56]), [withinSquare])).toBe(true);
+    expect(entityLogic.matches(at([15.5, 56]), [withinSquare])).toBe(true);
+    expect(entityLogic.matches(at([16, 56.5]), [withinSquare])).toBe(true);
+    // Just outside the square is still outside.
+    expect(entityLogic.matches(at([16.001, 56.5]), [withinSquare])).toBe(false);
+  });
+
+  it('keeps the boundary tolerance tight on short slanted edges', () => {
+    // Edge of about 15 m (1.41e-4 degrees), drawn by hand on a map.
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15.6, 56.2],
+        [15.6001, 56.2001],
+        [15.6002, 56.2],
+      ],
+    };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    // On the edge.
+    expect(entityLogic.matches(at([15.60005, 56.20005]), [condition])).toBe(
+      true,
+    );
+    // 1e-7 degrees (about 1 cm) outside the edge.
+    expect(
+      entityLogic.matches(at([15.60005 - 1e-7, 56.20005 + 1e-7]), [condition]),
+    ).toBe(false);
+  });
+
+  it('handles degenerate and extreme polygons', () => {
+    const collinear: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [15.5, 56],
+        [16, 56],
+      ],
+    };
+    const huge: FilterCondition = {
+      ...collinear,
+      value: [
+        [0, 0],
+        [1e200, 1e200],
+        [0, 1e200],
+      ],
+    };
+    const at = (location: [number, number]): Entity => ({
+      properties: { 'meta.location': location },
+    });
+
+    expect(entityLogic.matches(at([15.25, 56]), [collinear])).toBe(true);
+    expect(entityLogic.matches(at([15.25, 56.1]), [collinear])).toBe(false);
+    expect(entityLogic.matches(at([6e199, 5e199]), [huge])).toBe(false);
+    expect(entityLogic.matches(at([4e199, 5e199]), [huge])).toBe(true);
+  });
+
+  it('treats closed and unclosed rings alike', () => {
+    const open: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+    const closed: FilterCondition = {
+      ...open,
+      value: [...polygon, polygon[0]],
+    };
+    const outside = { properties: { 'meta.location': [17, 56.2] } };
+
+    expect(entityLogic.matches(locationEntity, [closed])).toBe(
+      entityLogic.matches(locationEntity, [open]),
+    );
+    expect(entityLogic.matches(outside, [closed])).toBe(
+      entityLogic.matches(outside, [open]),
+    );
+  });
+
+  it('negates containment for missing and malformed locations', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'not_within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.matches(locationEntity, [condition])).toBe(false);
+    expect(entityLogic.matches(undefinedEntity, [condition])).toBe(true);
+    expect(
+      entityLogic.matches({ properties: { 'meta.location': [15.6] } }, [
+        condition,
+      ]),
+    ).toBe(true);
+  });
+
+  it.each(['within_polygon', 'not_within_polygon'] as const)(
+    'rejects invalid %s polygons',
+    (operator) => {
+      const valid: FilterCondition = {
+        field: 'meta.location',
+        type: 'location',
+        operator,
+        value: polygon,
+      };
+      const invalidValues = [
+        polygon.slice(0, 2),
+        new Array(3),
+        [[15, 56], new Array(2), [16, 57]],
+        [
+          [15, 56],
+          [16, '56'],
+          [16, 57],
+        ],
+        [
+          [15, 56],
+          [16, NaN],
+          [16, 57],
+        ],
+      ];
+
+      expect(entityLogic.validateFilter([valid])).toHaveLength(1);
+      invalidValues.forEach((value) =>
+        expect(() =>
+          entityLogic.validateFilter([
+            { ...valid, value } as unknown as FilterCondition,
+          ]),
+        ).toThrow(`Invalid condition value for location:${operator}`),
+      );
+    },
+  );
+
+  it('passes polygon conditions through serialization unchanged', () => {
+    const condition: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: polygon,
+    };
+
+    expect(entityLogic.serializeFilterCondition(condition)).toBe(condition);
+    expect(entityLogic.unserializeFilterCondition(condition)).toBe(condition);
   });
 });
 
@@ -1340,6 +1560,48 @@ describe('validation', () => {
 });
 
 describe('isFilterConditionEqual', () => {
+  it('compares polygon coordinates in order', () => {
+    const logic = EntityLogic(schema);
+    const first: FilterCondition = {
+      field: 'meta.location',
+      type: 'location',
+      operator: 'within_polygon',
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+      ],
+    };
+    const equal: FilterCondition = {
+      ...first,
+      value: [
+        [15, 56],
+        [16, 56],
+        [16, 57],
+      ],
+    };
+    const different: FilterCondition = {
+      ...first,
+      value: [
+        [15, 56],
+        [16, 56],
+        [15, 57],
+      ],
+    };
+    const reordered: FilterCondition = {
+      ...first,
+      value: [
+        [16, 56],
+        [15, 56],
+        [16, 57],
+      ],
+    };
+
+    expect(logic.isFilterConditionEqual(first, equal)).toBe(true);
+    expect(logic.isFilterConditionEqual(first, different)).toBe(false);
+    expect(logic.isFilterConditionEqual(first, reordered)).toBe(false);
+  });
+
   it('correctly compares location filter conditions', () => {
     const logic = EntityLogic(schema);
 
